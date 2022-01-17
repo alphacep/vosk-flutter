@@ -1,15 +1,16 @@
 # vosk_flutter_plugin
 
-A new Flutter project.
+Flutter plugin for Vosk speech recognition.
 
-## Getting Started
+## How to use
 
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.dev/developing-packages/),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
+### Load and init model
+ByteData modelZip = await rootBundle.load('assets/models/vosk-model-small-en-us-0.15.zip');
+await VoskFlutterPlugin.initModel(modelZip);
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Start recognition
+VoskFlutterPlugin.start();
+
+### Stop recognition
+VoskFlutterPlugin.stop();
 
