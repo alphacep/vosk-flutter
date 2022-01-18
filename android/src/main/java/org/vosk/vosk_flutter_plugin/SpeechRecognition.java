@@ -1,11 +1,5 @@
 package org.vosk.vosk_flutter_plugin;
 
-import android.app.Activity;
-import android.content.Context;
-
-import androidx.annotation.NonNull;
-
-import org.vosk.LibVosk;
 import org.vosk.Model;
 import org.vosk.Recognizer;
 import org.vosk.android.RecognitionListener;

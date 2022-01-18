@@ -34,10 +34,6 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler, Acti
   private MethodChannel channel;
   private SpeechRecognition speechRecognition;
 
-  private EventChannel.EventSink resultEvent;
-  private EventChannel.EventSink partialEvent;
-
-//  private Context context;
   private Activity activity;
 
   private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
@@ -49,8 +45,8 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler, Acti
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
     channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "vosk_flutter_plugin");
     channel.setMethodCallHandler(this);
-    this.speechRecognition = new SpeechRecognition(flutterPluginBinding);
-//    context = flutterPluginBinding.getApplicationContext();
+    speechRecognition = new SpeechRecognition(flutterPluginBinding);
+    check(activity);
   }
 
   @Override
@@ -59,12 +55,8 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler, Acti
 
       //LOAD AND INIT MODEL
       case "initModel":
-        if (check(activity)) {
-          speechRecognition.initModel(call.arguments());
-          result.success("success");
-        } else {
-          result.error("No audio record permission granted", "No audio record permission granted", "No audio record permission granted");
-        }
+        speechRecognition.initModel(call.arguments());
+        result.success("success");
         break;
 
 
