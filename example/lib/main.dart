@@ -7,6 +7,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:vosk_flutter_plugin/vosk_flutter_plugin.dart';
+import 'package:vosk_flutter_plugin_example/home.dart';
 
 void main() {
   runApp(const MyApp());
@@ -33,55 +34,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Column(
-          children: [
-            const Text('On Partial'),
-            StreamBuilder(
-              stream: VoskFlutterPlugin.onPartial(),
-              builder: (context, snapshot) => Text(snapshot.data.toString()),
-            ),
-
-
-            const Text('On Result'),
-            StreamBuilder(
-              stream: VoskFlutterPlugin.onResult(),
-              builder: (context, snapshot) => Text(snapshot.data.toString()),
-            ),
-
-
-            const Text('On final result'),
-            StreamBuilder(
-              stream: VoskFlutterPlugin.onFinalResult(),
-              builder: (context, snapshot) => Text(snapshot.data.toString()),
-            ),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ElevatedButton(
-                  onPressed: () => initModel(),
-                  child: const Text('Init model')
-                ),
-
-                ElevatedButton(
-                  onPressed: () => VoskFlutterPlugin.start(),
-                  child: const Text('Start recognition')
-                ),
-
-                ElevatedButton(
-                  onPressed: () => VoskFlutterPlugin.stop(),
-                  child: const Text('Stop recognition')
-                )
-              ],
-            )
-          ],
-        ),
-      ),
+    return const MaterialApp(
+      home: Home(),
     );
   }
 }

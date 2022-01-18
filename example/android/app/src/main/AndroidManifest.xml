@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.vosk.vosk_flutter_plugin_example">
    <application
-        android:label="vosk_flutter_plugin_example"
+        android:label="Vosk Flutter Plugin Demo"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

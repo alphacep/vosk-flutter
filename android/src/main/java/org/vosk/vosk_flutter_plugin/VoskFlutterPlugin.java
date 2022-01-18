@@ -38,15 +38,11 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler, Acti
 
   private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
 
-
-
-
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
     channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "vosk_flutter_plugin");
     channel.setMethodCallHandler(this);
     speechRecognition = new SpeechRecognition(flutterPluginBinding);
-    check(activity);
   }
 
   @Override
@@ -99,6 +95,7 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler, Acti
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
     this.activity = binding.getActivity();
+    check(activity);
   }
 
   @Override
