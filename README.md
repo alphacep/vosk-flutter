@@ -7,7 +7,7 @@ Flutter plugin for Vosk speech recognition.
 ### Configurations
 Add this pro guard rules in ...android/app/proguard-rules.pro
 If file not exist, create it.
-```proguard
+```properties
 -keep class com.sun.jna.* { *; }
 -keepclassmembers class * extends com.sun.jna.* { public *; }
 ```
@@ -37,6 +37,16 @@ VoskFlutterPlugin.stop();
 ```dart
 StreamBuilder(
   stream: VoskFlutterPlugin.onPartial(),
+  builder: (context, snapshot) => Text(snapshot.data.toString()),
+),
+
+StreamBuilder(
+  stream: VoskFlutterPlugin.onResult(),
+  builder: (context, snapshot) => Text(snapshot.data.toString()),
+),
+
+StreamBuilder(
+  stream: VoskFlutterPlugin.onFinalResult(),
   builder: (context, snapshot) => Text(snapshot.data.toString()),
 ),
 ```
