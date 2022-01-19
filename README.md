@@ -6,7 +6,7 @@ Flutter plugin for Vosk speech recognition.
 
 ### Configurations
 Add this pro guard rules in ...android/app/proguard-rules.pro
-If file not exist, create it.
+If the file does not exist create it.
 ```properties
 -keep class com.sun.jna.* { *; }
 -keepclassmembers class * extends com.sun.jna.* { public *; }
