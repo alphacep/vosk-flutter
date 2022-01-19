@@ -13,7 +13,7 @@ If file not exist, create it.
 ```
 
 Add this plugin to pubspec.yaml
-```dart
+```yaml
 vosk_flutter_plugin:
 ```
 
