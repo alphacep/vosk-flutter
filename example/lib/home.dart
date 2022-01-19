@@ -28,6 +28,11 @@ class _HomeState extends State<Home> {
           child: Column(
             children: [
 
+              StreamBuilder(
+                stream: VoskFlutterPlugin.onProcess(),
+                builder: (context, snapshot) => Text(snapshot.data.toString()),
+              ),
+
               if (!isModelLoaded && !isModelLoading) ElevatedButton(
                 onPressed: () async {
                   setState(() {
@@ -48,7 +53,7 @@ class _HomeState extends State<Home> {
               if (isModelLoaded) const Text('Model loaded'),
 
               ElevatedButton(
-                onPressed: !isRecognizing ? () {
+                onPressed: !isRecognizing && isModelLoaded ? () {
                   VoskFlutterPlugin.start();
                   setState(() {
                     isRecognizing = true;

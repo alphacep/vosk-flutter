@@ -6,6 +6,7 @@ import org.vosk.android.RecognitionListener;
 import org.vosk.android.SpeechService;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.EventChannel;
@@ -13,7 +14,6 @@ import io.flutter.plugin.common.EventChannel;
 public class SpeechRecognition implements RecognitionListener {
     private Model model;
     private SpeechService speechService;
-    private Recognizer recognizer;
 
     private EventChannel.EventSink resultEvent;
     private EventChannel.EventSink partialEvent;
@@ -22,6 +22,8 @@ public class SpeechRecognition implements RecognitionListener {
     private final EventChannel resultEventChannel;
     private final EventChannel partialEventChannel;
     private final EventChannel finalResultEventChannel;
+
+    private TaskRunner taskRunner;
 
     SpeechRecognition(FlutterPlugin.FlutterPluginBinding flutterPluginBinding) {
         resultEventChannel = new EventChannel(flutterPluginBinding.getBinaryMessenger(), "RESULT_EVENT");
@@ -32,8 +34,33 @@ public class SpeechRecognition implements RecognitionListener {
 
     ///Load and init model
     void initModel(String pathModel) {
-        model = new Model(pathModel);
-        recognizer = new Recognizer(model, 16000.0f);
+        if (taskRunner == null) {
+            taskRunner = new TaskRunner();
+        }
+
+        if (pathModel == null) {
+            return;
+        }
+
+        try {
+            taskRunner.executeAsync(new SetupModel(pathModel), result -> model = result);
+        } catch(Exception e) {
+            throw new RuntimeException(e);
+        }
+//        model = new Model(pathModel);
+    }
+
+    private static class SetupModel implements Callable<Model> {
+        private final String path;
+
+        public SetupModel(String path) {
+            this.path = path;
+        }
+
+        @Override
+        public Model call() {
+            return new Model(path);
+        }
     }
 
     ///Start recognition
@@ -47,7 +74,7 @@ public class SpeechRecognition implements RecognitionListener {
         if (model == null) {
             throw new IOException("Model not loaded. Model may not be downloaded yet, or has the wrong path in the filesystem.");
         }
-
+        Recognizer recognizer = new Recognizer(model, 16000.0f);
         speechService = new SpeechService(recognizer, 16000.0f);
         speechService.startListening(this);
     }
