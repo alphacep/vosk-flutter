@@ -1,25 +1,11 @@
-import 'dart:developer';
-import 'dart:io';
-import 'dart:typed_data';
-
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
-
 import 'package:flutter/services.dart';
 import 'package:vosk_flutter_plugin/vosk_flutter_plugin.dart';
 import 'package:vosk_flutter_plugin_example/home.dart';
 
-void main() async {
-
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  await runZonedGuarded<Future<void>>(() async {
-    await FirebaseCrashlytics.instance.recordError('INICIANDO APP', null);
-    runApp(const MyApp());
-  }, (error, stack) => FirebaseCrashlytics.instance.recordError(error, stack));
-
+void main() {
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {

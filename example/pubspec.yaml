@@ -17,8 +17,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  firebase_crashlytics: ^2.4.4
-  firebase_core: ^1.10.6
 
   vosk_flutter_plugin:
     # When depending on this package from a real application you should use:

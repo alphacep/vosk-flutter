@@ -85,41 +85,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.1.2"
-  firebase_core:
-    dependency: "direct main"
-    description:
-      name: firebase_core
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.11.0"
-  firebase_core_platform_interface:
-    dependency: transitive
-    description:
-      name: firebase_core_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "4.2.3"
-  firebase_core_web:
-    dependency: transitive
-    description:
-      name: firebase_core_web
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.5.3"
-  firebase_crashlytics:
-    dependency: "direct main"
-    description:
-      name: firebase_crashlytics
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.4.5"
-  firebase_crashlytics_platform_interface:
-    dependency: transitive
-    description:
-      name: firebase_crashlytics_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.1.12"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -137,18 +102,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_web_plugins:
-    dependency: transitive
-    description: flutter
-    source: sdk
-    version: "0.0.0"
-  js:
-    dependency: transitive
-    description:
-      name: js
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.6.3"
   lints:
     dependency: transitive
     description:
