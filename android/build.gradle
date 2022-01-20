@@ -1,0 +1,52 @@
+group 'org.vosk.vosk_flutter_plugin'
+version '1.0'
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url 'https://alphacephei.com/maven/'
+        }
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.0.3'
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url 'https://alphacephei.com/maven/'
+        }
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 30
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 30
+//        ndk {
+//            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86_64', 'x86'
+//        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'net.java.dev.jna:jna:5.8.0@aar'
+    implementation group: 'com.alphacephei', name: 'vosk-android', version: '0.3.32'
+//    implementation project(':models')
+}
