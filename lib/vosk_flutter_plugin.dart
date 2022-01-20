@@ -14,14 +14,10 @@ class VoskFlutterPlugin {
   static const EventChannel _partialMessageChannel = EventChannel('PARTIAL_RESULT_EVENT');
   static const EventChannel _finalResultMessageChannel = EventChannel('FINAL_RESULT_EVENT');
   static bool _isLoaded = false;
-  static String status = '';
 
   static Future<void> initModel(ByteData modelZip) async {
-    status = 'iniciando';
     String modelPath = await _decompressModel(modelZip);
-    // status = modelPath;
     String result = await _channel.invokeMethod('initModel', modelPath);
-    status = 'modelo iniciado';
     log(result, name: 'INIT VOSK MODEL');
     _isLoaded = true;
   }
@@ -46,10 +42,6 @@ class VoskFlutterPlugin {
 
   static Stream onResult() {
     return _resultMessageChannel.receiveBroadcastStream();
-  }
-
-  static Stream onProcess() async* {
-    yield status;
   }
 
   static Stream onPartial() {

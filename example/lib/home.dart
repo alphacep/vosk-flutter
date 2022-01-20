@@ -28,11 +28,6 @@ class _HomeState extends State<Home> {
           child: Column(
             children: [
 
-              StreamBuilder(
-                stream: VoskFlutterPlugin.onProcess(),
-                builder: (context, snapshot) => Text(snapshot.data.toString()),
-              ),
-
               if (!isModelLoaded && !isModelLoading) ElevatedButton(
                 onPressed: () async {
                   setState(() {
