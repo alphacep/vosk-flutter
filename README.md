@@ -1,5 +1,7 @@
 # vosk_flutter_plugin
 
+[![style: very good analysis](https://img.shields.io/badge/style-very_good_analysis-B22C89.svg)](https://pub.dev/packages/very_good_analysis)
+
 Flutter plugin for Vosk speech recognition.
 
 ## How to use
@@ -15,17 +17,22 @@ If the file does not exist create it.
 Add this plugin to pubspec.yaml
 ```yaml
 vosk_flutter_plugin:
+  git: https://github.com/alphacep/vosk-flutter
 ```
 
 ### Load and init model
 ```dart
+bool loaded = false;
+final vosk = VoskFlutterPlugin();
 ByteData modelZip = await rootBundle.load('assets/models/vosk-model-small-en-us-0.15.zip');
-await VoskFlutterPlugin.initModel(modelZip);
+vosk.initModel(modelZip, initCallback: () => loaded = true);
 ```
 
 ### Start recognition
 ```dart
-VoskFlutterPlugin.start();
+if (loaded) {
+  VoskFlutterPlugin.start();
+}
 ```
 
 ### Stop recognition

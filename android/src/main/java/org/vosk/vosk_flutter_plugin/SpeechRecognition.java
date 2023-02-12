@@ -33,7 +33,7 @@ public class SpeechRecognition implements RecognitionListener {
     }
 
     ///Load and init model
-    void initModel(String pathModel) {
+    void initModel(String pathModel, Runnable callback) {
         if (taskRunner == null) {
             taskRunner = new TaskRunner();
         }
@@ -43,8 +43,11 @@ public class SpeechRecognition implements RecognitionListener {
         }
 
         try {
-            taskRunner.executeAsync(new SetupModel(pathModel), result -> model = result);
-        } catch(Exception e) {
+            taskRunner.executeAsync(new SetupModel(pathModel), result -> {
+                model = result;
+                callback.run();
+            });
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 //        model = new Model(pathModel);
