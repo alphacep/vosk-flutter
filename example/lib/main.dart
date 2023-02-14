@@ -16,15 +16,15 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   @override
   void initState() {
     super.initState();
   }
 
   Future<void> initModel() async {
-    ByteData modelZip = await rootBundle.load('assets/models/vosk-model-small-en-us-0.15.zip');
-    await VoskFlutterPlugin.initModel(modelZip);
+    await VoskFlutterPlugin.instance().initModel(
+        modelPath: await ModelLoader()
+            .loadFromAssets('assets/models/vosk-model-small-en-us-0.15.zip'));
   }
 
   @override
