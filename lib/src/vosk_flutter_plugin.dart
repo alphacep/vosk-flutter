@@ -1,7 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/services.dart';
+import 'package:vosk_flutter_plugin/src/model.dart';
+import 'package:vosk_flutter_plugin/src/recognizer.dart';
+import 'package:vosk_flutter_plugin/src/speech_service.dart';
 
 /// Provides access to the Vosk speech recognition API.
 class VoskFlutterPlugin {
@@ -9,86 +13,63 @@ class VoskFlutterPlugin {
     _channel.setMethodCallHandler(_methodCallHandler);
   }
 
+  static const MethodChannel _channel = MethodChannel('vosk_flutter_plugin');
+  static const String _voskLogName = 'VOSK';
+
   static VoskFlutterPlugin? _instance;
 
-  /// Now you can only get one vosk instance
+  /// Get plugin instance.
   ///
   /// ignore:prefer_constructors_over_static_methods
   static VoskFlutterPlugin instance() => _instance ??= VoskFlutterPlugin._();
 
-  static const MethodChannel _channel = MethodChannel('vosk_flutter_plugin');
-  static const EventChannel _resultMessageChannel =
-      EventChannel('RESULT_EVENT');
-  static const EventChannel _partialMessageChannel =
-      EventChannel('PARTIAL_RESULT_EVENT');
-  static const EventChannel _finalResultMessageChannel =
-      EventChannel('FINAL_RESULT_EVENT');
-  static const String _voskLogName = 'VOSK';
+  late final Map<String, Completer<Model>> _pendingModels = {};
 
-  bool _initialized = false;
-  VoidCallback? _initCallback;
+  Future<Model> createModel(String modelPath) {
+    final completer = Completer<Model>();
+    _pendingModels[modelPath] = completer;
+
+    _channel.invokeMethod('model.create', modelPath);
+
+    return completer.future;
+  }
+
+  Future<Recognizer> createRecognizer({
+    required Model model,
+    required int sampleRate,
+    List<String>? grammar,
+  }) async {
+    var args = <String, dynamic>{
+      'modelPath': model.path,
+      'sampleRate': sampleRate,
+    };
+    if (grammar != null) {
+      args['grammar'] = jsonEncode(grammar);
+    }
+
+    final id = await _channel.invokeMethod('recognizer.create', args);
+    return Recognizer(
+      id: id as int,
+      model: model,
+      sampleRate: sampleRate,
+      channel: _channel,
+    );
+  }
+
+  Future<SpeechService> initSpeechService(Recognizer recognizer) async {
+    await _channel
+        .invokeMethod('speechService.init', {'recognizerId': recognizer.id});
+    return SpeechService(_channel);
+  }
 
   Future<void> _methodCallHandler(MethodCall call) async {
     switch (call.method) {
-      case 'init':
-        _initialized = true;
-        _initCallback?.call();
+      case 'model.created':
+        final modelPath = call.arguments as String;
+        _pendingModels.remove(modelPath)?.complete(Model(modelPath, _channel));
         break;
       default:
         log('Unsupported method: ${call.method}');
     }
-  }
-
-  /// Initialize Vosk with language model.
-  /// [initCallback] will be called when initialization finishes.
-  Future<void> initModel({
-    required String modelPath,
-    VoidCallback? initCallback,
-  }) async {
-    _initCallback = initCallback;
-    await _channel.invokeMethod('initModel', modelPath);
-  }
-
-  /// Start voice recognition.
-  /// You should call [initModel] first and wait until initialization finished.
-  /// Use [onResult], [onPartial], [onFinalResult] to get recognition data.
-  Future<void> start() async {
-    if (_initialized) {
-      final result = await _channel.invokeMethod('start');
-      log(result.toString(), name: _voskLogName);
-    } else {
-      log('Skipping start(): call initModel() first', name: _voskLogName);
-    }
-  }
-
-  /// Stop voice recognition.
-  Future<void> stop() async {
-    if (_initialized) {
-      final result = await _channel.invokeMethod('stop');
-      log(result.toString(), name: 'STOP VOSK RECOGNITION');
-    } else {
-      log('NO MODEL LOADED', name: 'STOP VOSK RECOGNITION');
-    }
-  }
-
-  /// Get stream with voice recognition results.
-  Stream<String> onResult() {
-    return _resultMessageChannel
-        .receiveBroadcastStream()
-        .map((result) => result.toString());
-  }
-
-  /// Get stream with voice recognition partial results.
-  Stream<String> onPartial() {
-    return _partialMessageChannel
-        .receiveBroadcastStream()
-        .map((result) => result.toString());
-  }
-
-  /// Get stream with voice recognition final results.
-  Stream<String> onFinalResult() {
-    return _finalResultMessageChannel
-        .receiveBroadcastStream()
-        .map((result) => result.toString());
   }
 }
