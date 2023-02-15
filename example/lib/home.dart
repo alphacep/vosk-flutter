@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:vosk_flutter_plugin/vosk_flutter_plugin.dart';
-import 'package:wav/wav.dart';
 
 const modelAsset = 'assets/models/vosk-model-small-en-us-0.15.zip';
 
@@ -182,11 +181,10 @@ class _HomeState extends State<Home> {
       return;
     }
 
-    final wav = Wav.read(
-        (await rootBundle.load('assets/audio/test.wav')).buffer.asUint8List());
-
     _toastFutureError(localRecognizer
-        .acceptWaveformBytes(wav.channels[0].buffer.asUint8List())
+        .acceptWaveformBytes((await rootBundle.load('assets/audio/test.wav'))
+            .buffer
+            .asUint8List())
         .then((value) => Fluttertoast.showToast(msg: value.toString())));
   }
 
