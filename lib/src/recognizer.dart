@@ -30,7 +30,9 @@ class Recognizer {
 
   Future<void> setPartialWords(bool partialWords) {
     return _invokeRecognizerMethod<void>(
-        'setPartialWords', {'words': partialWords});
+      'setPartialWords',
+      {'partialWords': partialWords},
+    );
   }
 
   Future<bool?> acceptWaveformBytes(Uint8List bytes) {
@@ -55,7 +57,9 @@ class Recognizer {
 
   Future<void> setGrammar(List<String> grammar) {
     return _invokeRecognizerMethod<void>(
-        'setGrammar', {'grammar': jsonEncode(grammar)});
+      'setGrammar',
+      {'grammar': jsonEncode(grammar)},
+    );
   }
 
   Future<void> reset() {
@@ -70,9 +74,9 @@ class Recognizer {
     String method, [
     Map<String, dynamic> arguments = const {},
   ]) {
-    arguments = Map.from(arguments);
-    arguments['recognizerId'] = id;
-    return _channel.invokeMethod<T>('recognizer.$method', arguments);
+    final args = Map<String, dynamic>.from(arguments);
+    args['recognizerId'] = id;
+    return _channel.invokeMethod<T>('recognizer.$method', args);
   }
 
   @override

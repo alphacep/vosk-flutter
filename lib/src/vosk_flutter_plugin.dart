@@ -39,7 +39,7 @@ class VoskFlutterPlugin {
     required int sampleRate,
     List<String>? grammar,
   }) async {
-    var args = <String, dynamic>{
+    final args = <String, dynamic>{
       'modelPath': model.path,
       'sampleRate': sampleRate,
     };
@@ -57,8 +57,10 @@ class VoskFlutterPlugin {
   }
 
   Future<SpeechService> initSpeechService(Recognizer recognizer) async {
-    await _channel
-        .invokeMethod('speechService.init', {'recognizerId': recognizer.id});
+    await _channel.invokeMethod('speechService.init', {
+      'recognizerId': recognizer.id,
+      'sampleRate': recognizer.sampleRate,
+    });
     return SpeechService(_channel);
   }
 
