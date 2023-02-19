@@ -1,20 +1,10 @@
 package org.vosk.vosk_flutter_plugin;
 
-import org.vosk.Model;
-import org.vosk.Recognizer;
-import org.vosk.android.RecognitionListener;
-import org.vosk.android.SpeechService;
-
-import java.io.IOException;
-
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.EventChannel;
+import org.vosk.android.RecognitionListener;
 
-public class SpeechRecognition implements RecognitionListener {
-
-  private Model model;
-  private SpeechService speechService;
-
+public class FlutterRecognitionListener implements RecognitionListener {
   private EventChannel.EventSink resultEvent;
   private EventChannel.EventSink partialEvent;
   private EventChannel.EventSink finalResultEvent;
@@ -23,9 +13,7 @@ public class SpeechRecognition implements RecognitionListener {
   private final EventChannel partialEventChannel;
   private final EventChannel finalResultEventChannel;
 
-  private TaskRunner taskRunner;
-
-  SpeechRecognition(FlutterPlugin.FlutterPluginBinding flutterPluginBinding) {
+  public FlutterRecognitionListener(FlutterPlugin.FlutterPluginBinding flutterPluginBinding){
     resultEventChannel = new EventChannel(flutterPluginBinding.getBinaryMessenger(),
         "RESULT_EVENT");
     partialEventChannel = new EventChannel(flutterPluginBinding.getBinaryMessenger(),
@@ -33,58 +21,6 @@ public class SpeechRecognition implements RecognitionListener {
     finalResultEventChannel = new EventChannel(flutterPluginBinding.getBinaryMessenger(),
         "FINAL_RESULT_EVENT");
     initEventChannels();
-  }
-
-  ///Load and init model
-  void initModel(String pathModel, Runnable callback) {
-    if (taskRunner == null) {
-      taskRunner = new TaskRunner();
-    }
-
-    if (pathModel == null) {
-      return;
-    }
-
-    try {
-      taskRunner.executeAsync(() -> new Model(pathModel), result -> {
-        model = result;
-        callback.run();
-      }, (Exception exception) -> {
-      });//TODO ?
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-//        model = new Model(pathModel);
-  }
-
-  ///Start recognition
-  public void start() throws IOException {
-    // If the speech is already running, cancel it.
-    if (speechService != null) {
-      speechService.cancel();
-      speechService = null;
-    }
-
-    if (model == null) {
-      throw new IOException(
-          "Model not loaded. Model may not be downloaded yet, or has the wrong path in the filesystem.");
-    }
-    Recognizer recognizer = new Recognizer(model, 16000.0f);
-    speechService = new SpeechService(recognizer, 16000.0f);
-    speechService.startListening(this);
-  }
-
-  ///Stop recognition
-  public void stop() throws IOException {
-    if (speechService != null) {
-      speechService.stop();
-      speechService.shutdown();
-    }
-
-    if (model == null) {
-      throw new IOException(
-          "Model not loaded. Model may not be downloaded yet, or has the wrong path in the filesystem.");
-    }
   }
 
   @Override
@@ -164,7 +100,6 @@ public class SpeechRecognition implements RecognitionListener {
         finalResultEvent = null;
       }
     });
-
   }
 
   public void dispose() {
@@ -172,5 +107,4 @@ public class SpeechRecognition implements RecognitionListener {
     partialEventChannel.setStreamHandler(null);
     finalResultEventChannel.setStreamHandler(null);
   }
-
 }

@@ -28,7 +28,7 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 30
+    compileSdk 33
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -45,8 +45,8 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'net.java.dev.jna:jna:5.8.0@aar'
-    implementation group: 'com.alphacephei', name: 'vosk-android', version: '0.3.32'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'net.java.dev.jna:jna:5.13.0@aar'
+    implementation 'com.alphacephei:vosk-android:0.3.46@aar'
 //    implementation project(':models')
 }
