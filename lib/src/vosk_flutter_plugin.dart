@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:vosk_flutter_plugin/src/model.dart';
 import 'package:vosk_flutter_plugin/src/recognizer.dart';
 import 'package:vosk_flutter_plugin/src/speech_service.dart';
@@ -57,6 +58,11 @@ class VoskFlutterPlugin {
   }
 
   Future<SpeechService> initSpeechService(Recognizer recognizer) async {
+    if (await Permission.microphone.request() == PermissionStatus.denied) {
+      // TODO(sergsavchuk): create corresponding error class
+      throw 'Microphone permission was denied';
+    }
+
     await _channel.invokeMethod('speechService.init', {
       'recognizerId': recognizer.id,
       'sampleRate': recognizer.sampleRate,
