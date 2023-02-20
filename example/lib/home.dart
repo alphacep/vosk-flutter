@@ -22,6 +22,9 @@ class _HomeState extends State<Home> {
   Recognizer? recognizer;
   SpeechService? speechService;
 
+  String _grammar = 'hello world foo boo';
+  int _maxAlternatives = 2;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,21 +34,61 @@ class _HomeState extends State<Home> {
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
         child: ListView(
-          // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Model: ${model?.path}"),
+            Text("Model: $model"),
             btn('model.create', _modelCreate, color: Colors.orange),
             const Divider(color: Colors.grey, thickness: 1),
             Text("Recognizer: $recognizer"),
             btn('recognizer.create', _recognizerCreate, color: Colors.green),
-            btn('recognizer.setMaxAlternatives', _recognizerSetMaxAlternatives,
-                color: Colors.green),
+            Row(
+              children: [
+                Flexible(
+                  child: btn('recognizer.setMaxAlternatives',
+                      _recognizerSetMaxAlternatives,
+                      color: Colors.green),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Text(
+                    _maxAlternatives.toString(),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                Flexible(
+                  child: Slider(
+                    value: _maxAlternatives.toDouble(),
+                    min: 0,
+                    max: 3,
+                    divisions: 3,
+                    onChanged: (val) => setState(() {
+                      _maxAlternatives = val.toInt();
+                    }),
+                  ),
+                )
+              ],
+            ),
             btn('recognizer.setWords', _recognizerSetWords,
                 color: Colors.green),
             btn('recognizer.setPartialWords', _recognizerSetPartialWords,
                 color: Colors.green),
-            btn('recognizer.setGrammar', _recognizerSetGrammar,
-                color: Colors.green),
+            Row(
+              children: [
+                Flexible(
+                  child: btn('recognizer.setGrammar', _recognizerSetGrammar,
+                      color: Colors.green),
+                ),
+                const SizedBox(width: 20),
+                Flexible(
+                  child: TextField(
+                    style: const TextStyle(color: Colors.black),
+                    controller: TextEditingController(text: _grammar),
+                    onChanged: (val) => setState(() {
+                      _grammar = val;
+                    }),
+                  ),
+                )
+              ],
+            ),
             btn('recognizer.acceptWaveForm', _recognizerAcceptWaveForm,
                 color: Colors.green),
             btn('recognizer.getResult', _recognizerGetResult,
@@ -140,7 +183,7 @@ class _HomeState extends State<Home> {
       return;
     }
 
-    _toastFutureError(localRecognizer.setMaxAlternatives(2));
+    _toastFutureError(localRecognizer.setMaxAlternatives(_maxAlternatives));
   }
 
   void _recognizerSetWords() async {
@@ -170,8 +213,7 @@ class _HomeState extends State<Home> {
       return;
     }
 
-    _toastFutureError(
-        localRecognizer.setGrammar(['hello', 'world', 'foo boo']));
+    _toastFutureError(localRecognizer.setGrammar(_grammar.split(' ')));
   }
 
   void _recognizerAcceptWaveForm() async {
