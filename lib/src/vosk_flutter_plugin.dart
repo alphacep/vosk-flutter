@@ -57,7 +57,9 @@ class VoskFlutterPlugin {
     );
   }
 
-  Future<SpeechService> initSpeechService(Recognizer recognizer) async {
+  Future<SpeechService> initSpeechService(
+    Recognizer recognizer,
+  ) async {
     if (await Permission.microphone.request() == PermissionStatus.denied) {
       // TODO(sergsavchuk): create corresponding error class
       throw 'Microphone permission was denied';

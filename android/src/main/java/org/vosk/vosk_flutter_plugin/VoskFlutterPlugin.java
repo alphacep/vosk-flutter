@@ -18,6 +18,7 @@ import org.vosk.android.SpeechService;
  * VoskFlutterPlugin
  */
 public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
+
   private MethodChannel channel;
   private FlutterRecognitionListener recognitionListener;
   private SpeechService speechService;
@@ -29,7 +30,7 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
     channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "vosk_flutter_plugin");
     channel.setMethodCallHandler(this);
-    recognitionListener = new FlutterRecognitionListener(flutterPluginBinding);
+    recognitionListener = new FlutterRecognitionListener(flutterPluginBinding.getBinaryMessenger());
   }
 
   @Override
