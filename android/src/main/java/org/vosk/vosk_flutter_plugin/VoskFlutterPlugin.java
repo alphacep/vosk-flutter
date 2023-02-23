@@ -19,12 +19,14 @@ import org.vosk.android.SpeechService;
  */
 public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
 
-  private MethodChannel channel;
-  private FlutterRecognitionListener recognitionListener;
-  private SpeechService speechService;
+  private static final Class<HashMap<String, Object>> argsMapClass = (Class<HashMap<String, Object>>) new HashMap<String, Object>().getClass();
 
-  private static final HashMap<String, Model> modelsMap = new HashMap<>();
-  private static final TreeMap<Integer, Recognizer> recognizersMap = new TreeMap<>();
+  private final HashMap<String, Model> modelsMap = new HashMap<>();
+  private final TreeMap<Integer, Recognizer> recognizersMap = new TreeMap<>();
+
+  private MethodChannel channel;
+  private SpeechService speechService;
+  private FlutterRecognitionListener recognitionListener;
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
@@ -39,31 +41,29 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
       switch (call.method) {
 
         case "model.create": {
-          String modelPath = castToRequiredType(String.class, call.arguments);
+          String modelPath = castMethodCallArgs(call, String.class);
           if (modelPath == null) {
-            result.error("WRONG_ARGS",
-                "Please, send 1 string argument, contains model path", null);
+            result.error("WRONG_ARGS", "Please, send 1 string argument, contains model path", null);
             break;
           }
 
-          new TaskRunner().executeAsync(
-              () -> new Model(modelPath),
-              (Model model) -> {
-                modelsMap.put(modelPath, model);
-                channel.invokeMethod("model.created", modelPath);
-              },
-              (Exception exception) -> {
-                result.error("MODEL_ERROR", exception.getMessage(), exception);
-              });
+          new TaskRunner().executeAsync(() -> new Model(modelPath), (Model model) -> {
+            modelsMap.put(modelPath, model);
+            channel.invokeMethod("model.created", modelPath);
+          }, (Exception exception) -> {
+            result.error("MODEL_ERROR", exception.getMessage(), exception);
+          });
 
           result.success(null);
         }
         break;
 
         case "recognizer.create": {
-          Map<String, Object> argsMap = castToRequiredType(HashMap.class, call.arguments);
-          Integer sampleRate = getArgumentFromMap(result, argsMap, "sampleRate");
-          String modelPath = getArgumentFromMap(result, argsMap, "modelPath");
+          Map<String, Object> argsMap = castMethodCallArgs(call, argsMapClass);
+          Integer sampleRate = getRequiredArgumentFromMap(argsMap, "sampleRate", Integer.class);
+          String modelPath = getRequiredArgumentFromMap(argsMap, "modelPath", String.class);
+          String grammar = getArgumentFromMap(argsMap, "grammar", String.class);
+
           Model model = modelsMap.get(modelPath);
           if (model == null) {
             result.error("NO_MODEL",
@@ -72,12 +72,11 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
             break;
           }
 
-          int recognizerId = recognizersMap.isEmpty() ? 1 : recognizersMap.lastKey() + 1;
+          Integer recognizerId = recognizersMap.isEmpty() ? 1 : recognizersMap.lastKey() + 1;
           try {
-            Recognizer recognizer = argsMap.get("grammar") == null ?
-                new Recognizer(model, sampleRate) :
-                new Recognizer(model, sampleRate,
-                    castToRequiredType(String.class, argsMap.get("grammar")));
+            Recognizer recognizer =
+                argsMap.get("grammar") == null ? new Recognizer(model, sampleRate)
+                    : new Recognizer(model, sampleRate, grammar);
             recognizersMap.put(recognizerId, recognizer);
           } catch (IOException e) {
             result.error("CREATION_ERROR", "Can't create recognizer.", e);
@@ -89,10 +88,10 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
         break;
 
         case "recognizer.setMaxAlternatives": {
-          Map<String, Object> argsMap = castToRequiredType(HashMap.class, call.arguments);
-
-          int recognizerId = getArgumentFromMap(result, argsMap, "recognizerId");
-          int maxAlternatives = getArgumentFromMap(result, argsMap, "maxAlternatives");
+          Map<String, Object> argsMap = castMethodCallArgs(call, argsMapClass);
+          Integer recognizerId = getRequiredArgumentFromMap(argsMap, "recognizerId", Integer.class);
+          Integer maxAlternatives = getRequiredArgumentFromMap(argsMap, "maxAlternatives",
+              Integer.class);
 
           try {
             recognizersMap.get(recognizerId).setMaxAlternatives(maxAlternatives);
@@ -106,10 +105,9 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
         break;
 
         case "recognizer.setWords": {
-          Map<String, Object> argsMap = castToRequiredType(HashMap.class, call.arguments);
-
-          int recognizerId = getArgumentFromMap(result, argsMap, "recognizerId");
-          boolean words = getArgumentFromMap(result, argsMap, "words");
+          Map<String, Object> argsMap = castMethodCallArgs(call, argsMapClass);
+          Integer recognizerId = getRequiredArgumentFromMap(argsMap, "recognizerId", Integer.class);
+          Boolean words = getRequiredArgumentFromMap(argsMap, "words", Boolean.class);
 
           try {
             recognizersMap.get(recognizerId).setWords(words);
@@ -123,10 +121,9 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
         break;
 
         case "recognizer.setPartialWords": {
-          Map<String, Object> argsMap = castToRequiredType(HashMap.class, call.arguments);
-
-          int recognizerId = getArgumentFromMap(result, argsMap, "recognizerId");
-          boolean partialWords = getArgumentFromMap(result, argsMap, "partialWords");
+          Map<String, Object> argsMap = castMethodCallArgs(call, argsMapClass);
+          Integer recognizerId = getRequiredArgumentFromMap(argsMap, "recognizerId", Integer.class);
+          Boolean partialWords = getRequiredArgumentFromMap(argsMap, "partialWords", Boolean.class);
 
           try {
             recognizersMap.get(recognizerId).setPartialWords(partialWords);
@@ -140,11 +137,10 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
         break;
 
         case "recognizer.acceptWaveForm": {
-          Map<String, Object> argsMap = castToRequiredType(HashMap.class, call.arguments);
-
-          int recognizerId = getArgumentFromMap(result, argsMap, "recognizerId");
-          byte[] bytes = (byte[]) argsMap.get("bytes");
-          float[] floats = (float[]) argsMap.get("floats");
+          Map<String, Object> argsMap = castMethodCallArgs(call, argsMapClass);
+          Integer recognizerId = getRequiredArgumentFromMap(argsMap, "recognizerId", Integer.class);
+          byte[] bytes = getArgumentFromMap(argsMap, "bytes", byte[].class);
+          float[] floats = getArgumentFromMap(argsMap, "floats", float[].class);
 
           if (bytes == null && floats == null) {
             result.error("WRONG_ARGS", "Didn't find data. Pls, send data", null);
@@ -165,9 +161,8 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
         break;
 
         case "recognizer.getResult": {
-          Map<String, Object> argsMap = castToRequiredType(HashMap.class, call.arguments);
-
-          int recognizerId = getArgumentFromMap(result, argsMap, "recognizerId");
+          Map<String, Object> argsMap = castMethodCallArgs(call, argsMapClass);
+          Integer recognizerId = getRequiredArgumentFromMap(argsMap, "recognizerId", Integer.class);
 
           try {
             result.success(recognizersMap.get(recognizerId).getResult());
@@ -178,9 +173,8 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
         break;
 
         case "recognizer.getPartialResult": {
-          Map<String, Object> argsMap = castToRequiredType(HashMap.class, call.arguments);
-
-          int recognizerId = getArgumentFromMap(result, argsMap, "recognizerId");
+          Map<String, Object> argsMap = castMethodCallArgs(call, argsMapClass);
+          Integer recognizerId = getRequiredArgumentFromMap(argsMap, "recognizerId", Integer.class);
 
           try {
             result.success(recognizersMap.get(recognizerId).getPartialResult());
@@ -191,9 +185,8 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
         break;
 
         case "recognizer.getFinalResult": {
-          Map<String, Object> argsMap = castToRequiredType(HashMap.class, call.arguments);
-
-          int recognizerId = getArgumentFromMap(result, argsMap, "recognizerId");
+          Map<String, Object> argsMap = castMethodCallArgs(call, argsMapClass);
+          Integer recognizerId = getRequiredArgumentFromMap(argsMap, "recognizerId", Integer.class);
 
           try {
             result.success(recognizersMap.get(recognizerId).getFinalResult());
@@ -204,10 +197,9 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
         break;
 
         case "recognizer.setGrammar": {
-          Map<String, Object> argsMap = castToRequiredType(HashMap.class, call.arguments);
-
-          int recognizerId = getArgumentFromMap(result, argsMap, "recognizerId");
-          String grammar = getArgumentFromMap(result, argsMap, "grammar");
+          Map<String, Object> argsMap = castMethodCallArgs(call, argsMapClass);
+          Integer recognizerId = getRequiredArgumentFromMap(argsMap, "recognizerId", Integer.class);
+          String grammar = getRequiredArgumentFromMap(argsMap, "grammar", String.class);
 
           try {
             recognizersMap.get(recognizerId).setGrammar(grammar);
@@ -220,9 +212,8 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
         break;
 
         case "recognizer.reset": {
-          Map<String, Object> argsMap = castToRequiredType(HashMap.class, call.arguments);
-
-          int recognizerId = getArgumentFromMap(result, argsMap, "recognizerId");
+          Map<String, Object> argsMap = castMethodCallArgs(call, argsMapClass);
+          Integer recognizerId = getRequiredArgumentFromMap(argsMap, "recognizerId", Integer.class);
 
           try {
             recognizersMap.get(recognizerId).reset();
@@ -234,9 +225,8 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
         break;
 
         case "recognizer.close": {
-          Map<String, Object> argsMap = castToRequiredType(HashMap.class, call.arguments);
-
-          int recognizerId = getArgumentFromMap(result, argsMap, "recognizerId");
+          Map<String, Object> argsMap = castMethodCallArgs(call, argsMapClass);
+          Integer recognizerId = getRequiredArgumentFromMap(argsMap, "recognizerId", Integer.class);
 
           try {
             recognizersMap.get(recognizerId).close();
@@ -249,10 +239,10 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
         break;
 
         case "speechService.init": {
-          Map<String, Object> argsMap = castToRequiredType(HashMap.class, call.arguments);
+          Map<String, Object> argsMap = castMethodCallArgs(call, argsMapClass);
 
-          int recognizerId = getArgumentFromMap(result, argsMap, "recognizerId");
-          float sampleRate = getArgumentFromMap(result, argsMap, "sampleRate");
+          Integer recognizerId = getRequiredArgumentFromMap(argsMap, "recognizerId", Integer.class);
+          float sampleRate = getRequiredArgumentFromMap(argsMap, "sampleRate", Float.class);
 
           if (speechService == null) {
             try {
@@ -280,9 +270,9 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
         break;
 
         case "speechService.setPause": {
-          boolean isPause = castToRequiredType(boolean.class, call.arguments);
+          Boolean paused = castMethodCallArgs(call, Boolean.class);
 
-          speechService.setPause(isPause);
+          speechService.setPause(paused);
           result.success(null);
         }
         break;
@@ -309,29 +299,44 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
           result.notImplemented();
           break;
       }
-    } catch (ArgumentNotFoundException e) {
-      result.error("WRONG_ARGUMENTS", "Couldn't find expected argument.", e);
-    } catch (WrongTypeException e) {
-      result.error("WRONG_TYPE", "Wrong argument type.", e);
+    } catch (MissingRequiredArgument e) {
+      result.error("MISSING_REQUIRED_ARGUMENT", "Couldn't find required argument", e);
+    } catch (WrongArgumentTypeException e) {
+      result.error("WRONG_TYPE", "Wrong argument type", e);
     }
-
   }
 
-  public <T> T castToRequiredType(Class<T> classType, Object arguments) throws WrongTypeException {
-    if (classType.isInstance(arguments)) {
-      return classType.cast(arguments);
+  public <T> T castMethodCallArgs(MethodCall call, Class<T> classType) throws WrongArgumentTypeException {
+    if (classType.isInstance(call.arguments)) {
+      return classType.cast(call.arguments);
     } else {
-      throw new WrongTypeException(arguments.getClass().getName(), classType.getName());
+      throw new WrongArgumentTypeException(call.arguments.getClass(), classType,
+          String.format("%s method", call.method));
     }
   }
 
-  public <T> T getArgumentFromMap(Result result, Map<String, Object> map, String argumentName)
-      throws ArgumentNotFoundException {
+  public <T> T getArgumentFromMap(Map<String, Object> map, String argumentName, Class<T> classType)
+      throws WrongArgumentTypeException {
     Object argument = map.get(argumentName);
     if (argument == null) {
-      throw new ArgumentNotFoundException(argumentName);
+      return null;
+    } else if (classType.isInstance(argument)) {
+      return classType.cast(argument);
+    } else {
+      throw new WrongArgumentTypeException(argument.getClass(), classType,
+          String.format("Argument %s", argumentName));
     }
-    return (T) argument;
+  }
+
+  public <T> T getRequiredArgumentFromMap(Map<String, Object> map, String argumentName,
+      Class<T> classType)
+      throws MissingRequiredArgument, WrongArgumentTypeException {
+    T argument = getArgumentFromMap(map, argumentName, classType);
+    if (argument == null) {
+      throw new MissingRequiredArgument(argumentName);
+    }
+
+    return argument;
   }
 
   @Override
