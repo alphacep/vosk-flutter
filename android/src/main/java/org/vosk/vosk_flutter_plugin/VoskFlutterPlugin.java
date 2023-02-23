@@ -50,9 +50,7 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
           new TaskRunner().executeAsync(() -> new Model(modelPath), (Model model) -> {
             modelsMap.put(modelPath, model);
             channel.invokeMethod("model.created", modelPath);
-          }, (Exception exception) -> {
-            result.error("MODEL_ERROR", exception.getMessage(), exception);
-          });
+          }, (exception) -> result.error("MODEL_ERROR", exception.getMessage(), exception));
 
           result.success(null);
         }
@@ -93,13 +91,7 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
           Integer maxAlternatives = getRequiredArgumentFromMap(argsMap, "maxAlternatives",
               Integer.class);
 
-          try {
-            recognizersMap.get(recognizerId).setMaxAlternatives(maxAlternatives);
-          } catch (NullPointerException e) {
-            result.error("NO_RECOGNIZER", "There is no recognizer with this id.", null);
-            break;
-          }
-
+          getRecognizerById(recognizerId).setMaxAlternatives(maxAlternatives);
           result.success(null);
         }
         break;
@@ -109,13 +101,7 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
           Integer recognizerId = getRequiredArgumentFromMap(argsMap, "recognizerId", Integer.class);
           Boolean words = getRequiredArgumentFromMap(argsMap, "words", Boolean.class);
 
-          try {
-            recognizersMap.get(recognizerId).setWords(words);
-          } catch (NullPointerException e) {
-            result.error("WRONG_RECOGNIZER_ID", "There is no recognizer with this id.", null);
-            break;
-          }
-
+          getRecognizerById(recognizerId).setWords(words);
           result.success(null);
         }
         break;
@@ -125,13 +111,7 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
           Integer recognizerId = getRequiredArgumentFromMap(argsMap, "recognizerId", Integer.class);
           Boolean partialWords = getRequiredArgumentFromMap(argsMap, "partialWords", Boolean.class);
 
-          try {
-            recognizersMap.get(recognizerId).setPartialWords(partialWords);
-          } catch (NullPointerException e) {
-            result.error("WRONG_RECOGNIZER_ID", "There is no recognizer with this id.", null);
-            break;
-          }
-
+          getRecognizerById(recognizerId).setPartialWords(partialWords);
           result.success(null);
         }
         break;
@@ -147,16 +127,13 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
             break;
           }
 
-          try {
-            if (bytes == null) {
-              result.success(
-                  recognizersMap.get(recognizerId).acceptWaveForm(floats, floats.length));
-            } else {
-              result.success(recognizersMap.get(recognizerId).acceptWaveForm(bytes, bytes.length));
-            }
-          } catch (Exception e) {
-            result.error("WRONG_RECOGNIZER_ID", "There is no recognizer with this id.", null);
+          Recognizer recognizer = getRecognizerById(recognizerId);
+          if (bytes == null) {
+            result.success(recognizer.acceptWaveForm(floats, floats.length));
+          } else {
+            result.success(recognizer.acceptWaveForm(bytes, bytes.length));
           }
+
         }
         break;
 
@@ -164,11 +141,7 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
           Map<String, Object> argsMap = castMethodCallArgs(call, argsMapClass);
           Integer recognizerId = getRequiredArgumentFromMap(argsMap, "recognizerId", Integer.class);
 
-          try {
-            result.success(recognizersMap.get(recognizerId).getResult());
-          } catch (Exception e) {
-            result.error("WRONG_RECOGNIZER_ID", "There is no recognizer with this id.", null);
-          }
+          result.success(getRecognizerById(recognizerId).getResult());
         }
         break;
 
@@ -176,11 +149,7 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
           Map<String, Object> argsMap = castMethodCallArgs(call, argsMapClass);
           Integer recognizerId = getRequiredArgumentFromMap(argsMap, "recognizerId", Integer.class);
 
-          try {
-            result.success(recognizersMap.get(recognizerId).getPartialResult());
-          } catch (Exception e) {
-            result.error("WRONG_RECOGNIZER_ID", "There is no recognizer with this id.", null);
-          }
+          result.success(getRecognizerById(recognizerId).getPartialResult());
         }
         break;
 
@@ -188,11 +157,7 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
           Map<String, Object> argsMap = castMethodCallArgs(call, argsMapClass);
           Integer recognizerId = getRequiredArgumentFromMap(argsMap, "recognizerId", Integer.class);
 
-          try {
-            result.success(recognizersMap.get(recognizerId).getFinalResult());
-          } catch (Exception e) {
-            result.error("WRONG_RECOGNIZER_ID", "There is no recognizer with this id.", null);
-          }
+          result.success(getRecognizerById(recognizerId).getFinalResult());
         }
         break;
 
@@ -201,12 +166,7 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
           Integer recognizerId = getRequiredArgumentFromMap(argsMap, "recognizerId", Integer.class);
           String grammar = getRequiredArgumentFromMap(argsMap, "grammar", String.class);
 
-          try {
-            recognizersMap.get(recognizerId).setGrammar(grammar);
-          } catch (Exception e) {
-            result.error("WRONG_RECOGNIZER_ID", "There is no recognizer with this id.", null);
-          }
-
+          getRecognizerById(recognizerId).setGrammar(grammar);
           result.success(null);
         }
         break;
@@ -215,11 +175,7 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
           Map<String, Object> argsMap = castMethodCallArgs(call, argsMapClass);
           Integer recognizerId = getRequiredArgumentFromMap(argsMap, "recognizerId", Integer.class);
 
-          try {
-            recognizersMap.get(recognizerId).reset();
-          } catch (Exception e) {
-            result.error("WRONG_RECOGNIZER_ID", "There is no recognizer with this id.", null);
-          }
+          getRecognizerById(recognizerId).reset();
           result.success(null);
         }
         break;
@@ -228,21 +184,16 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
           Map<String, Object> argsMap = castMethodCallArgs(call, argsMapClass);
           Integer recognizerId = getRequiredArgumentFromMap(argsMap, "recognizerId", Integer.class);
 
-          try {
-            recognizersMap.get(recognizerId).close();
-            recognizersMap.remove(recognizerId);
-          } catch (Exception e) {
-            result.error("WRONG_RECOGNIZER_ID", "There is no recognizer with this id.", null);
-          }
+          getRecognizerById(recognizerId).close();
+          recognizersMap.remove(recognizerId);
           result.success(null);
         }
         break;
 
         case "speechService.init": {
           Map<String, Object> argsMap = castMethodCallArgs(call, argsMapClass);
-
           Integer recognizerId = getRequiredArgumentFromMap(argsMap, "recognizerId", Integer.class);
-          float sampleRate = getRequiredArgumentFromMap(argsMap, "sampleRate", Float.class);
+          Integer sampleRate = getRequiredArgumentFromMap(argsMap, "sampleRate", Integer.class);
 
           if (speechService == null) {
             try {
@@ -303,10 +254,13 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
       result.error("MISSING_REQUIRED_ARGUMENT", "Couldn't find required argument", e);
     } catch (WrongArgumentTypeException e) {
       result.error("WRONG_TYPE", "Wrong argument type", e);
+    } catch (RecognizerNotFound e) {
+      result.error("NO_RECOGNIZER", "There is no recognizer with this id.", e);
     }
   }
 
-  public <T> T castMethodCallArgs(MethodCall call, Class<T> classType) throws WrongArgumentTypeException {
+  public <T> T castMethodCallArgs(MethodCall call, Class<T> classType)
+      throws WrongArgumentTypeException {
     if (classType.isInstance(call.arguments)) {
       return classType.cast(call.arguments);
     } else {
@@ -337,6 +291,14 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
     }
 
     return argument;
+  }
+
+  Recognizer getRecognizerById(Integer recognizerId) throws RecognizerNotFound {
+    Recognizer recognizer = recognizersMap.get(recognizerId);
+    if (recognizer == null) {
+      throw new RecognizerNotFound(recognizerId);
+    }
+    return recognizer;
   }
 
   @Override
