@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:vosk_flutter_plugin/src/model.dart';
+import 'package:vosk_flutter_plugin/src/model_loader.dart';
 import 'package:vosk_flutter_plugin/src/recognizer.dart';
 import 'package:vosk_flutter_plugin/src/speech_service.dart';
 
@@ -14,27 +15,32 @@ class VoskFlutterPlugin {
     _channel.setMethodCallHandler(_methodCallHandler);
   }
 
-  static const MethodChannel _channel = MethodChannel('vosk_flutter_plugin');
-  static const String _voskLogName = 'VOSK';
-
-  static VoskFlutterPlugin? _instance;
-
   /// Get plugin instance.
   ///
   /// ignore:prefer_constructors_over_static_methods
   static VoskFlutterPlugin instance() => _instance ??= VoskFlutterPlugin._();
 
+  static const MethodChannel _channel = MethodChannel('vosk_flutter_plugin');
+  static VoskFlutterPlugin? _instance;
+
   late final Map<String, Completer<Model>> _pendingModels = {};
 
+  /// Create a model from model data located at the [modelPath].
+  /// See [ModelLoader]
   Future<Model> createModel(String modelPath) {
     final completer = Completer<Model>();
     _pendingModels[modelPath] = completer;
 
     _channel.invokeMethod('model.create', modelPath);
-
     return completer.future;
   }
 
+  /// Create a recognizer that will use the specified [model] to process
+  /// speech. [sampleRate] determines the sample rate of the audio fed to the
+  /// recognizer(a mismatch in the sample rate causes accuracy problems).
+  ///
+  /// You can optionally provide [grammar] for the recognizer, see
+  /// [Recognizer.setGrammar] for more details about the grammar usage.
   Future<Recognizer> createRecognizer({
     required Model model,
     required int sampleRate,
@@ -57,12 +63,14 @@ class VoskFlutterPlugin {
     );
   }
 
-  Future<SpeechService> initSpeechService(
-    Recognizer recognizer,
-  ) async {
-    if (await Permission.microphone.request() == PermissionStatus.denied) {
-      // TODO(sergsavchuk): create corresponding error class
-      throw 'Microphone permission was denied';
+  /// Init a speech service that will use the provided [recognizer] to process
+  /// audio input from the device microphone.
+  ///
+  /// This method may throw [MicrophoneAccessDeniedException].
+  Future<SpeechService> initSpeechService(Recognizer recognizer) async {
+    if (await Permission.microphone.status == PermissionStatus.denied &&
+        await Permission.microphone.request() == PermissionStatus.denied) {
+      throw MicrophoneAccessDeniedException();
     }
 
     await _channel.invokeMethod('speechService.init', {
@@ -79,7 +87,10 @@ class VoskFlutterPlugin {
         _pendingModels.remove(modelPath)?.complete(Model(modelPath, _channel));
         break;
       default:
-        log('Unsupported method: ${call.method}');
+        log('Unsupported method: ${call.method}', name: 'VOSK_PLUGIN');
     }
   }
 }
+
+/// An exception thrown when the user denies access to the microphone.
+class MicrophoneAccessDeniedException implements Exception {}

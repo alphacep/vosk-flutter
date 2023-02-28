@@ -190,7 +190,7 @@ class _HomeState extends State<Home> {
       return;
     }
 
-    _toastFutureError(localRecognizer.setWords(true));
+    _toastFutureError(localRecognizer.setWords(words: true));
   }
 
   void _recognizerSetPartialWords() async {
@@ -200,7 +200,7 @@ class _HomeState extends State<Home> {
       return;
     }
 
-    _toastFutureError(localRecognizer.setPartialWords(true));
+    _toastFutureError(localRecognizer.setPartialWords(partialWords: true));
   }
 
   void _recognizerSetGrammar() async {
@@ -280,7 +280,8 @@ class _HomeState extends State<Home> {
       return;
     }
 
-    _toastFutureError(localRecognizer.close().then((_) => _recognizer = null));
+    _toastFutureError(
+        localRecognizer.dispose().then((_) => _recognizer = null));
   }
 
   void _initSpeechService() async {
@@ -328,7 +329,7 @@ class _HomeState extends State<Home> {
       return;
     }
 
-    _toastFutureError(localSpeechService.setPause(true));
+    _toastFutureError(localSpeechService.setPause(paused: true));
   }
 
   void _speechServiceReset() async {
@@ -360,6 +361,8 @@ class _HomeState extends State<Home> {
       return;
     }
 
-    _toastFutureError(localSpeechService.destroy());
+    _toastFutureError(localSpeechService
+        .dispose()
+        .then((value) => setState(() => _speechService = null)));
   }
 }

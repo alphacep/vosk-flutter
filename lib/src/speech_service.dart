@@ -1,8 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:vosk_flutter_plugin/src/recognizer.dart';
+import 'package:vosk_flutter_plugin/src/vosk_flutter_plugin.dart';
 
+/// Speech recognition service used to process audio input from the device's
+/// microphone.
 class SpeechService {
+  /// Use [VoskFlutterPlugin.initSpeechService] to create an instance
+  /// of [SpeechService].
   SpeechService(this._channel);
 
   final MethodChannel _channel;
@@ -11,7 +17,9 @@ class SpeechService {
   Stream<String>? _partialResultStream;
   StreamSubscription<void>? _errorStreamSubscription;
 
-  Future<bool?> start({required Function onRecognitionError}) {
+  /// Start recognition.
+  /// Use [onResult] and [onPartial] to get recognition results.
+  Future<bool?> start({Function? onRecognitionError}) {
     _errorStreamSubscription ??= EventChannel(
       'error_event_channel',
       const StandardMethodCodec(),
@@ -21,22 +29,28 @@ class SpeechService {
     return _channel.invokeMethod<bool>('speechService.start');
   }
 
+  /// Stop recognition.
   Future<bool?> stop() {
     _errorStreamSubscription?.cancel();
     return _channel.invokeMethod<bool>('speechService.stop');
   }
 
-  Future<bool?> setPause(bool paused) =>
+  /// Pause/unpause recognition.
+  Future<bool?> setPause({required bool paused}) =>
       _channel.invokeMethod<bool>('speechService.setPause', paused);
 
+  /// Reset recognition.
+  /// See [Recognizer.reset].
   Future<bool?> reset() => _channel.invokeMethod<bool>('speechService.reset');
 
+  /// Cancel recognition.
   Future<bool?> cancel() {
     _errorStreamSubscription?.cancel();
     return _channel.invokeMethod<bool>('speechService.cancel');
   }
 
-  Future<void> destroy() {
+  /// Release service resources.
+  Future<void> dispose() {
     _errorStreamSubscription?.cancel();
     return _channel.invokeMethod<void>('speechService.destroy');
   }
