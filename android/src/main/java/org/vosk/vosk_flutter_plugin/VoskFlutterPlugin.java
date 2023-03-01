@@ -13,6 +13,10 @@ import java.util.TreeMap;
 import org.vosk.Model;
 import org.vosk.Recognizer;
 import org.vosk.android.SpeechService;
+import org.vosk.vosk_flutter_plugin.exceptions.MissingRequiredArgument;
+import org.vosk.vosk_flutter_plugin.exceptions.RecognizerNotFound;
+import org.vosk.vosk_flutter_plugin.exceptions.SpeechServiceNotFound;
+import org.vosk.vosk_flutter_plugin.exceptions.WrongArgumentTypeException;
 
 /**
  * VoskFlutterPlugin
@@ -211,16 +215,20 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
         break;
 
         case "speechService.start": {
+          if(speechService == null) throw new SpeechServiceNotFound();
           result.success(speechService.startListening(recognitionListener));
         }
         break;
 
         case "speechService.stop": {
+          if(speechService == null) throw new SpeechServiceNotFound();
           result.success(speechService.stop());
         }
         break;
 
         case "speechService.setPause": {
+          if(speechService == null) throw new SpeechServiceNotFound();
+
           Boolean paused = castMethodCallArgs(call, Boolean.class);
 
           speechService.setPause(paused);
@@ -229,17 +237,20 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
         break;
 
         case "speechService.reset": {
+          if(speechService == null) throw new SpeechServiceNotFound();
           speechService.reset();
           result.success(null);
         }
         break;
 
         case "speechService.cancel": {
+          if(speechService == null) throw new SpeechServiceNotFound();
           result.success(speechService.cancel());
         }
         break;
 
         case "speechService.destroy": {
+          if(speechService == null) throw new SpeechServiceNotFound();
           speechService.shutdown();
           speechService = null;
           result.success(null);
@@ -256,6 +267,8 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
       result.error("WRONG_TYPE", "Wrong argument type", e);
     } catch (RecognizerNotFound e) {
       result.error("NO_RECOGNIZER", "There is no recognizer with this id.", e);
+    } catch (SpeechServiceNotFound e) {
+      result.error("NO_SPEECH_SERVICE", "Speech service not created.", e);
     }
   }
 
@@ -305,6 +318,11 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
   public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
     channel.setMethodCallHandler(null);
     recognitionListener.dispose();
+
+    if(speechService != null){
+      speechService.shutdown();
+      speechService = null;
+    }
 
     for (Recognizer recognizer : recognizersMap.values()) {
       recognizer.close();

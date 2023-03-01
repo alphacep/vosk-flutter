@@ -1,4 +1,4 @@
-package org.vosk.vosk_flutter_plugin;
+package org.vosk.vosk_flutter_plugin.exceptions;
 
 public class MissingRequiredArgument extends Exception {
 
