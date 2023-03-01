@@ -14,14 +14,14 @@ public class TaskRunner {
   private final Handler handler = new Handler(Looper.getMainLooper());
   private final Executor executor = Executors.newSingleThreadExecutor();
 
-  public <R> void executeAsync(Callable<R> callable, Consumer<R> callback,
+  public <T> void executeAsync(Callable<T> callable, Consumer<T> callback,
       Consumer<Exception> onError) {
     executor.execute(() -> {
-      final R result;
+      final T result;
       try {
         result = callable.call();
       } catch (Exception e) {
-        onError.accept(e);
+        handler.post(() -> onError.accept(e));
         return;
       }
       handler.post(() -> callback.accept(result));

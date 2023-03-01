@@ -51,10 +51,13 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
             break;
           }
 
-          new TaskRunner().executeAsync(() -> new Model(modelPath), (Model model) -> {
+          new TaskRunner().executeAsync(() -> new Model(modelPath), (model) -> {
             modelsMap.put(modelPath, model);
             channel.invokeMethod("model.created", modelPath);
-          }, (exception) -> result.error("MODEL_ERROR", exception.getMessage(), exception));
+          }, (exception) -> channel.invokeMethod("model.error", new HashMap<String, Object>() {{
+            put("modelPath", modelPath);
+            put("error", exception.getMessage());
+          }}));
 
           result.success(null);
         }
@@ -215,19 +218,25 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
         break;
 
         case "speechService.start": {
-          if(speechService == null) throw new SpeechServiceNotFound();
+          if (speechService == null) {
+            throw new SpeechServiceNotFound();
+          }
           result.success(speechService.startListening(recognitionListener));
         }
         break;
 
         case "speechService.stop": {
-          if(speechService == null) throw new SpeechServiceNotFound();
+          if (speechService == null) {
+            throw new SpeechServiceNotFound();
+          }
           result.success(speechService.stop());
         }
         break;
 
         case "speechService.setPause": {
-          if(speechService == null) throw new SpeechServiceNotFound();
+          if (speechService == null) {
+            throw new SpeechServiceNotFound();
+          }
 
           Boolean paused = castMethodCallArgs(call, Boolean.class);
 
@@ -237,20 +246,26 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
         break;
 
         case "speechService.reset": {
-          if(speechService == null) throw new SpeechServiceNotFound();
+          if (speechService == null) {
+            throw new SpeechServiceNotFound();
+          }
           speechService.reset();
           result.success(null);
         }
         break;
 
         case "speechService.cancel": {
-          if(speechService == null) throw new SpeechServiceNotFound();
+          if (speechService == null) {
+            throw new SpeechServiceNotFound();
+          }
           result.success(speechService.cancel());
         }
         break;
 
         case "speechService.destroy": {
-          if(speechService == null) throw new SpeechServiceNotFound();
+          if (speechService == null) {
+            throw new SpeechServiceNotFound();
+          }
           speechService.shutdown();
           speechService = null;
           result.success(null);
@@ -296,8 +311,7 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
   }
 
   public <T> T getRequiredArgumentFromMap(Map<String, Object> map, String argumentName,
-      Class<T> classType)
-      throws MissingRequiredArgument, WrongArgumentTypeException {
+      Class<T> classType) throws MissingRequiredArgument, WrongArgumentTypeException {
     T argument = getArgumentFromMap(map, argumentName, classType);
     if (argument == null) {
       throw new MissingRequiredArgument(argumentName);
@@ -319,7 +333,7 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
     channel.setMethodCallHandler(null);
     recognitionListener.dispose();
 
-    if(speechService != null){
+    if (speechService != null) {
       speechService.shutdown();
       speechService = null;
     }
