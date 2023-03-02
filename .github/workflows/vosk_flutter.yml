@@ -2,9 +2,9 @@ name: vosk_flutter
 
 on: [ push ]
 
-defaults:
-  run:
-    working-directory: ./example
+#defaults:
+#  run:
+#    working-directory: ./example
 
 jobs:
   android_integration_test:
@@ -30,7 +30,7 @@ jobs:
           java-version: "11"
 
       - name: "Configure"
-        run: chmod +x ../.github/workflows/scripts/android_integration_test.sh
+        run: chmod +x ./.github/workflows/scripts/android_integration_test.sh
 
       - name: "Android Integration Test"
         uses: reactivecircus/android-emulator-runner@v2
