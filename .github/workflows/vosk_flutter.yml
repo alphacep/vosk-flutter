@@ -29,6 +29,9 @@ jobs:
           distribution: "temurin"
           java-version: "11"
 
+      - name: "Configure"
+        run: chmod +x ../.github/workflows/scripts/android_integration_test.sh
+
       - name: "Android Integration Test"
         uses: reactivecircus/android-emulator-runner@v2
         with:
