@@ -32,10 +32,9 @@ jobs:
       - name: "Android Integration Test"
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 30
-          force-avd-creation: false
+          api-level: 33
           cores: 3
           target: google_apis
           arch: x86_64
-          profile: Pixel 6
+          profile: Nexus 5X
           script: ./.github/workflows/scripts/android_integration_test.sh
