@@ -30,3 +30,6 @@ build/
 
 # FVM
 .fvm/flutter_sdk
+
+# asdf
+.tool-versions

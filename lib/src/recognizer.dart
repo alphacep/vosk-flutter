@@ -49,14 +49,16 @@ class Recognizer {
 
   /// Accept and process new chunk of voice data(audio data in PCM 16-bit
   /// mono format).
-  Future<bool?> acceptWaveformBytes(Uint8List bytes) {
-    return _invokeRecognizerMethod<bool>('acceptWaveForm', {'bytes': bytes});
+  Future<bool> acceptWaveformBytes(Uint8List bytes) {
+    return _invokeRecognizerMethod<bool>('acceptWaveForm', {'bytes': bytes})
+        .then((value) => value!);
   }
 
   /// Accept and process new chunk of voice data(audio data in PCM 16-bit
   /// mono format).
-  Future<bool?> acceptWaveformFloats(Float32List floats) {
-    return _invokeRecognizerMethod<bool>('acceptWaveForm', {'floats': floats});
+  Future<bool> acceptWaveformFloats(Float32List floats) {
+    return _invokeRecognizerMethod<bool>('acceptWaveForm', {'floats': floats})
+        .then((value) => value!);
   }
 
   /// Returns speech recognition result.
@@ -105,8 +107,7 @@ class Recognizer {
     return _invokeRecognizerMethod<void>('close');
   }
 
-  Future<T?> _invokeRecognizerMethod<T>(
-    String method, [
+  Future<T?> _invokeRecognizerMethod<T>(String method, [
     Map<String, dynamic> arguments = const {},
   ]) {
     final args = Map<String, dynamic>.from(arguments);
