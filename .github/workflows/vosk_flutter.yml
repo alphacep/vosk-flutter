@@ -2,10 +2,6 @@ name: vosk_flutter
 
 on: [ push ]
 
-#defaults:
-#  run:
-#    working-directory: ./example
-
 jobs:
   android_integration_test:
     runs-on: macos-latest
