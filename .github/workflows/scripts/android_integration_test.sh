@@ -1,9 +1,4 @@
 #!/bin/bash
 
-set -e
-set -x
-
-cd example
+cd example || exit 1
 flutter drive --driver=test_driver/test_driver.dart --target=integration_test/vosk_flutter_plugin_test.dart
-
-set +x

@@ -3,6 +3,17 @@ name: vosk_flutter
 on: [ push ]
 
 jobs:
+  unit_test:
+    runs-on: macos-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v3
+      - name: "Install Flutter"
+        run: ./.github/workflows/scripts/install_flutter.sh
+      - name: "Run unit tests"
+        run: flutter test test/
+
   android_integration_test:
     runs-on: macos-latest
     timeout-minutes: 30
@@ -10,15 +21,13 @@ jobs:
       - name: "Checkout repository"
         uses: actions/checkout@v3
       - name: "Install Flutter"
-        run: |
-            git clone https://github.com/flutter/flutter.git --depth 1 -b stable _flutter
-            echo "$GITHUB_WORKSPACE/_flutter/bin" >> $GITHUB_PATH
-      - name: "Install Tools"
-        run: |
-            echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
-            echo "$HOME/AppData/Local/Pub/Cache/bin" >> $GITHUB_PATH
-            echo "$GITHUB_WORKSPACE/_flutter/.pub-cache/bin" >> $GITHUB_PATH
-            echo "$GITHUB_WORKSPACE/_flutter/bin/cache/dart-sdk/bin" >> $GITHUB_PATH
+        run: ./.github/workflows/scripts/install_flutter.sh
+      #      - name: "Install Tools"
+      #        run: |
+      #          echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
+      #          echo "$HOME/AppData/Local/Pub/Cache/bin" >> $GITHUB_PATH
+      #          echo "$GITHUB_WORKSPACE/_flutter/.pub-cache/bin" >> $GITHUB_PATH
+      #          echo "$GITHUB_WORKSPACE/_flutter/bin/cache/dart-sdk/bin" >> $GITHUB_PATH
 
       - uses: actions/setup-java@v3
         with:
