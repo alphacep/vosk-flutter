@@ -13,7 +13,9 @@ import 'package:path_provider/path_provider.dart';
 /// Models are loaded in separate isolates.
 class ModelLoader {
   /// Create a new instance of model loader with an optional [modelStorage].
-  ModelLoader({this.modelStorage});
+  ModelLoader({this.modelStorage, this.assetBundle, http.Client? httpClient}) {
+    this.httpClient = httpClient ?? http.Client();
+  }
 
   static const String _modelsListUrl =
       'https://alphacephei.com/vosk/models/model-list.json';
@@ -21,6 +23,13 @@ class ModelLoader {
   /// The path where the models loaded by this model loader will be located.
   /// If not specified [_defaultDecompressionPath] is used.
   final String? modelStorage;
+
+  /// Asset bundle used to load models from assets.
+  /// When the value is null, [rootBundle] is used.
+  final AssetBundle? assetBundle;
+
+  /// Http client used to make network requests.
+  late final http.Client httpClient;
 
   /// Load a model from the app assets. Returns the path to the loaded model.
   ///
@@ -33,14 +42,14 @@ class ModelLoader {
     final modelName = path.basenameWithoutExtension(asset);
     if (!forceReload && await isModelAlreadyLoaded(modelName)) {
       final modelPathValue = await modelPath(modelName);
-      log('Model already loaded to $modelPathValue in ', name: 'ModelLoader');
+      log('Model already loaded to $modelPathValue', name: 'ModelLoader');
       return modelPathValue;
     }
 
     final start = DateTime.now();
 
     // TODO(sergsavchuk): try to move the asset loading to the Isolate too
-    final bytes = await rootBundle.load(asset);
+    final bytes = await (assetBundle ?? rootBundle).load(asset);
     final archive = ZipDecoder().decodeBytes(bytes.buffer.asInt8List());
     final decompressionPath = modelStorage ?? await _defaultDecompressionPath();
 
@@ -70,7 +79,7 @@ class ModelLoader {
 
   /// Load a list of all available models from the vosk lib web page.
   Future<List<LanguageModelDescription>> loadModelsList() async {
-    final responseJson = (await http.get(Uri.parse(_modelsListUrl))).body;
+    final responseJson = (await httpClient.get(Uri.parse(_modelsListUrl))).body;
     final jsonList = jsonDecode(responseJson) as List<dynamic>;
     return jsonList
         .map(
