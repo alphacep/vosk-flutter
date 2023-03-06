@@ -1,4 +1,4 @@
-# vosk_flutter_plugin
+# Vosk Flutter Plugin
 
 [![style: very good analysis](https://img.shields.io/badge/style-very_good_analysis-B22C89.svg)](https://pub.dev/packages/very_good_analysis)
 [![vosk_flutter](https://github.com/alphacep/vosk-flutter/actions/workflows/vosk_flutter.yml/badge.svg)](https://github.com/alphacep/vosk-flutter/actions/workflows/vosk_flutter.yml)
@@ -14,25 +14,30 @@ Flutter plugin for Vosk speech recognition.
 ## Usage
 
 ### Configurations
-Add this pro guard rules in `android/app/proguard-rules.pro`
-If the file does not exist create it.
+Add this pro guard rules in `android/app/proguard-rules.pro`(if the file does not exist - create it):
 ```properties
 -keep class com.sun.jna.* { *; }
 -keepclassmembers class * extends com.sun.jna.* { public *; }
 ```
 
-Add this plugin to pubspec.yaml
+Add this plugin to your `pubspec.yaml`:
 ```yaml
 vosk_flutter_plugin:
   git: https://github.com/alphacep/vosk-flutter
 ```
 
-If you want to use microphone input, add microphone permission to your `AndroidManifest.xml`:
+If you want to use a microphone input, add the microphone permission to your `AndroidManifest.xml`:
 ```xml
 <uses-permission android:name="android.permission.RECORD_AUDIO" />
 ```
 
 ### Load model
+```yaml
+flutter:
+  assets:
+    - assets/models/
+
+```
 ```dart
 final vosk = VoskFlutterPlugin.instance();
 final enSmallModelPath = await ModelLoader()
