@@ -70,3 +70,18 @@ jobs:
           arch: x86_64
           profile: Nexus 5X
           script: ./.github/workflows/scripts/android_integration_test.sh
+
+  pub_dev_publish_check:
+    name: "Check pub.dev requirements"
+    timeout-minutes: 5
+    runs-on: macos-latest
+    needs: [android_integration_test]
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v3
+      - name: "Configure scripts "
+        run: chmod +x ./.github/workflows/scripts/*.sh
+      - name: "Install Flutter"
+        run: ./.github/workflows/scripts/install_flutter.sh
+      - name: "Publish check"
+        run: flutter pub publish --dry-run
