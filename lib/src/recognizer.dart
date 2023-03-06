@@ -107,7 +107,8 @@ class Recognizer {
     return _invokeRecognizerMethod<void>('close');
   }
 
-  Future<T?> _invokeRecognizerMethod<T>(String method, [
+  Future<T?> _invokeRecognizerMethod<T>(
+    String method, [
     Map<String, dynamic> arguments = const {},
   ]) {
     final args = Map<String, dynamic>.from(arguments);
