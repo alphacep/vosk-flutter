@@ -19,6 +19,7 @@ void main() {
   final http.Client client = MockClient();
   final AssetBundle assetBundle = MockAssetBundle();
   late final ModelLoader modelLoader;
+  late final Uint8List modelBytes;
   const modelsJson = '''
     [
       {
@@ -58,9 +59,9 @@ void main() {
     final archive = Archive()
       ..addFile(ArchiveFile.string('$testModelName/$testModelName.file', ''));
 
-    final byteData =
-        Uint8List.fromList(ZipEncoder().encode(archive)!).buffer.asByteData();
-    when(() => assetBundle.load(any())).thenAnswer((_) async => byteData);
+    modelBytes = Uint8List.fromList(ZipEncoder().encode(archive)!);
+    when(() => assetBundle.load(any()))
+        .thenAnswer((_) async => modelBytes.buffer.asByteData());
   });
 
   tearDown(() {
@@ -89,6 +90,22 @@ void main() {
     test('Loads a model from assets', () async {
       final modelPath =
           await modelLoader.loadFromAssets('assets/models/$testModelName');
+
+      expect(
+        Directory(modelPath).existsSync(),
+        equals(true),
+        reason: "File $modelPath doesn't exist",
+      );
+    });
+
+    test('Loads a model from the network', () async {
+      registerFallbackValue(Uri.parse(''));
+      when(() => client.get(any()))
+          .thenAnswer((_) async => http.Response.bytes(modelBytes, 200));
+
+      final modelPath = await modelLoader.loadFromNetwork(
+        'https://alphacephei.com/vosk/models/$testModelName.zip',
+      );
 
       expect(
         Directory(modelPath).existsSync(),

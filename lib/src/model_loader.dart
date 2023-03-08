@@ -48,12 +48,8 @@ class ModelLoader {
 
     final start = DateTime.now();
 
-    // TODO(sergsavchuk): try to move the asset loading to the Isolate too
     final bytes = await (assetBundle ?? rootBundle).load(asset);
-    final archive = ZipDecoder().decodeBytes(bytes.buffer.asInt8List());
-    final decompressionPath = modelStorage ?? await _defaultDecompressionPath();
-
-    await Isolate.run(() => extractArchiveToDisk(archive, decompressionPath));
+    final decompressionPath = await _extractModel(bytes.buffer.asUint8List());
 
     final decompressedModelRoot = path.join(decompressionPath, modelName);
     log(
@@ -73,8 +69,28 @@ class ModelLoader {
     String modelUrl, {
     bool forceReload = false,
   }) async {
-    // TODO(sergsavchuk): implement method
-    throw UnimplementedError();
+    final modelName = path.basenameWithoutExtension(modelUrl);
+    if (!forceReload && await isModelAlreadyLoaded(modelName)) {
+      final modelPathValue = await modelPath(modelName);
+      log('Model already loaded to $modelPathValue', name: 'ModelLoader');
+      return modelPathValue;
+    }
+
+    final start = DateTime.now();
+
+    final bytes = await httpClient
+        .get(Uri.parse(modelUrl))
+        .then((response) => response.bodyBytes);
+
+    final decompressionPath = await _extractModel(bytes);
+    final decompressedModelRoot = path.join(decompressionPath, modelName);
+    log(
+      'Model loaded to $decompressedModelRoot in '
+      '${DateTime.now().difference(start).inMilliseconds}ms',
+      name: 'ModelLoader',
+    );
+
+    return decompressedModelRoot;
   }
 
   /// Load a list of all available models from the vosk lib web page.
@@ -104,6 +120,15 @@ class ModelLoader {
   Future<String> modelPath(String modelName) async {
     final decompressionPath = modelStorage ?? await _defaultDecompressionPath();
     return path.join(decompressionPath, modelName);
+  }
+
+  Future<String> _extractModel(Uint8List bytes) async {
+    final archive = ZipDecoder().decodeBytes(bytes);
+    final decompressionPath = modelStorage ?? await _defaultDecompressionPath();
+
+    await Isolate.run(() => extractArchiveToDisk(archive, decompressionPath));
+
+    return decompressionPath;
   }
 
   static Future<String> _defaultDecompressionPath() async =>
