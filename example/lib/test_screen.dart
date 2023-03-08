@@ -5,14 +5,14 @@ import 'package:vosk_flutter_plugin/vosk_flutter_plugin.dart';
 
 const modelAsset = 'assets/models/vosk-model-small-en-us-0.15.zip';
 
-class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+class TestScreen extends StatefulWidget {
+  const TestScreen({Key? key}) : super(key: key);
 
   @override
-  State<Home> createState() => _HomeState();
+  State<TestScreen> createState() => _TestScreenState();
 }
 
-class _HomeState extends State<Home> {
+class _TestScreenState extends State<TestScreen> {
   final VoskFlutterPlugin _vosk = VoskFlutterPlugin.instance();
 
   Model? _model;
