@@ -1,7 +1,7 @@
 # Vosk Flutter Plugin
 
 [![style: very good analysis](https://img.shields.io/badge/style-very_good_analysis-B22C89.svg)](https://pub.dev/packages/very_good_analysis)
-[![vosk_flutter](https://github.com/alphacep/vosk-flutter/actions/workflows/vosk_flutter.yml/badge.svg)](https://github.com/alphacep/vosk-flutter/actions/workflows/vosk_flutter.yml)
+[![vosk_flutter](https://github.com/alphacep/vosk-flutter/actions/workflows/vosk_flutter.yml/badge.svg?branch=main)](https://github.com/alphacep/vosk-flutter/actions/workflows/vosk_flutter.yml?query=branch%3Amain)
 
 Flutter plugin for Vosk speech recognition.
 

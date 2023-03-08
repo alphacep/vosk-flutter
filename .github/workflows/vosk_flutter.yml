@@ -1,6 +1,10 @@
 name: vosk_flutter
 
-on: [ push ]
+on:
+  pull_request:
+    paths:
+      - "!**.md"
+      - "!**.gitignore"
 
 jobs:
   analyze:
@@ -32,6 +36,7 @@ jobs:
         run: dart format --set-exit-if-changed lib test
 
   unit_test:
+    name: "Unit test"
     runs-on: macos-latest
     timeout-minutes: 5
     steps:
@@ -45,6 +50,7 @@ jobs:
         run: flutter test test/
 
   android_integration_test:
+    name: "Android integration test"
     runs-on: macos-latest
     timeout-minutes: 40
     needs: [analyze, check_formatting, unit_test]
