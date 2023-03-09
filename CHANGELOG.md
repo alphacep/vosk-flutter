@@ -1,6 +1,6 @@
-## 2.0.0
+## 0.3.46
 
-- Plugin rework
+- Plugin rework by Sergey Savchuk and Evgeniy Vabishchevich
 
 ## 0.0.1
 
