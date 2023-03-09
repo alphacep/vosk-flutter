@@ -4,10 +4,10 @@ import 'dart:developer';
 
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:vosk_flutter_plugin/src/model.dart';
-import 'package:vosk_flutter_plugin/src/model_loader.dart';
-import 'package:vosk_flutter_plugin/src/recognizer.dart';
-import 'package:vosk_flutter_plugin/src/speech_service.dart';
+import 'package:vosk_flutter/src/model.dart';
+import 'package:vosk_flutter/src/model_loader.dart';
+import 'package:vosk_flutter/src/recognizer.dart';
+import 'package:vosk_flutter/src/speech_service.dart';
 
 /// Provides access to the Vosk speech recognition API.
 class VoskFlutterPlugin {
@@ -20,7 +20,7 @@ class VoskFlutterPlugin {
   /// ignore:prefer_constructors_over_static_methods
   static VoskFlutterPlugin instance() => _instance ??= VoskFlutterPlugin._();
 
-  static const MethodChannel _channel = MethodChannel('vosk_flutter_plugin');
+  static const MethodChannel _channel = MethodChannel('vosk_flutter');
   static VoskFlutterPlugin? _instance;
 
   late final Map<String, Completer<Model>> _pendingModels = {};

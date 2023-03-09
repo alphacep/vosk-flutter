@@ -1,4 +1,4 @@
-group 'org.vosk.vosk_flutter_plugin'
+group 'org.vosk.vosk_flutter'
 version '1.0'
 
 buildscript {

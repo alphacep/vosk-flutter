@@ -1,5 +1,5 @@
 import 'package:flutter/services.dart';
-import 'package:vosk_flutter_plugin/src/vosk_flutter_plugin.dart';
+import 'package:vosk_flutter/src/vosk_flutter.dart';
 
 /// Class representing the language model loaded by the plugin.
 class Model {

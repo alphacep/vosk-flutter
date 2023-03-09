@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:vosk_flutter_plugin/src/recognizer.dart';
-import 'package:vosk_flutter_plugin/src/vosk_flutter_plugin.dart';
+import 'package:vosk_flutter/src/recognizer.dart';
+import 'package:vosk_flutter/src/vosk_flutter.dart';
 
 /// Speech recognition service used to process audio input from the device's
 /// microphone.

@@ -1,6 +1,6 @@
-name: vosk_flutter_plugin
+name: vosk_flutter
 description: Flutter plugin for Vosk speech recognition model.
-version: 2.0.0
+version: 0.3.46
 homepage: https://alphacephei.com/
 repository: https://github.com/alphacep/vosk-flutter
 
@@ -28,5 +28,5 @@ flutter:
   plugin:
     platforms:
       android:
-        package: org.vosk.vosk_flutter_plugin
+        package: org.vosk.vosk_flutter
         pluginClass: VoskFlutterPlugin

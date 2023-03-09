@@ -1,5 +1,5 @@
-name: vosk_flutter_plugin_example
-description: Demonstrates how to use the vosk_flutter_plugin plugin.
+name: vosk_flutter_example
+description: Demonstrates how to use the vosk_flutter plugin.
 
 publish_to: 'none'
 
@@ -10,9 +10,9 @@ dependencies:
   flutter:
     sdk: flutter
 
-  vosk_flutter_plugin:
+  vosk_flutter:
     # When depending on this package from a real application you should use:
-    #   vosk_flutter_plugin: ^x.y.z
+    #   vosk_flutter: ^x.y.z
     # See https://dart.dev/tools/pub/dependencies#version-constraints
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.

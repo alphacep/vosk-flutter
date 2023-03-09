@@ -1,4 +1,4 @@
-package org.vosk.vosk_flutter_plugin;
+package org.vosk.vosk_flutter;
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
@@ -13,10 +13,10 @@ import java.util.TreeMap;
 import org.vosk.Model;
 import org.vosk.Recognizer;
 import org.vosk.android.SpeechService;
-import org.vosk.vosk_flutter_plugin.exceptions.MissingRequiredArgument;
-import org.vosk.vosk_flutter_plugin.exceptions.RecognizerNotFound;
-import org.vosk.vosk_flutter_plugin.exceptions.SpeechServiceNotFound;
-import org.vosk.vosk_flutter_plugin.exceptions.WrongArgumentTypeException;
+import org.vosk.vosk_flutter.exceptions.MissingRequiredArgument;
+import org.vosk.vosk_flutter.exceptions.RecognizerNotFound;
+import org.vosk.vosk_flutter.exceptions.SpeechServiceNotFound;
+import org.vosk.vosk_flutter.exceptions.WrongArgumentTypeException;
 
 /**
  * VoskFlutterPlugin
@@ -34,7 +34,7 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
-    channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "vosk_flutter_plugin");
+    channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "vosk_flutter");
     channel.setMethodCallHandler(this);
     recognitionListener = new FlutterRecognitionListener(flutterPluginBinding.getBinaryMessenger());
   }

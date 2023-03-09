@@ -1,6 +1,6 @@
-# vosk_flutter_plugin_example
+# vosk_flutter_example
 
-Demonstrates how to use the vosk_flutter_plugin plugin.
+Demonstrates how to use the vosk_flutter plugin.
 
 ## Getting Started
 

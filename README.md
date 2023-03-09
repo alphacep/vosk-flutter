@@ -22,7 +22,7 @@ Add this pro guard rules in `android/app/proguard-rules.pro`(if the file does no
 
 Add this plugin to your `pubspec.yaml`:
 ```yaml
-vosk_flutter_plugin:
+vosk_flutter:
   git: https://github.com/alphacep/vosk-flutter
 ```
 

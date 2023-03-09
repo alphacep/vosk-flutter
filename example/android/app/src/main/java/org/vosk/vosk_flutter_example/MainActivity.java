@@ -1,4 +1,4 @@
-package org.vosk.vosk_flutter_plugin_example;
+package org.vosk.vosk_flutter_example;
 
 import io.flutter.embedding.android.FlutterActivity;
 

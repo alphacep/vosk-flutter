@@ -13,7 +13,7 @@ Future<void> main() async {
     'shell',
     'pm',
     'grant',
-    'org.vosk.vosk_flutter_plugin_example',
+    'org.vosk.vosk_flutter_example',
     'android.permission.RECORD_AUDIO'
   ]);
   await integrationDriver();

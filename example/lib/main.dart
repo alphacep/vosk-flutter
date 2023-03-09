@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vosk_flutter_plugin/vosk_flutter_plugin.dart';
+import 'package:vosk_flutter/vosk_flutter.dart';
 
 void main() {
   runApp(const MyApp());

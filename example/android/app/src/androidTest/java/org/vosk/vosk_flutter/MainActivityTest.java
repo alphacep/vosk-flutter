@@ -1,7 +1,7 @@
-package org.vosk.vosk_flutter_plugin;
+package org.vosk.vosk_flutter;
 
 import androidx.test.rule.ActivityTestRule;
-import org.vosk.vosk_flutter_plugin_example.MainActivity;
+import org.vosk.vosk_flutter_example.MainActivity;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 

@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
 import 'package:path/path.dart' as path;
-import 'package:vosk_flutter_plugin/src/model_loader.dart';
+import 'package:vosk_flutter/src/model_loader.dart';
 
 class MockClient extends Mock implements http.Client {}
 

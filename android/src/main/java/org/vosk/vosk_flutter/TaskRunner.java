@@ -1,4 +1,4 @@
-package org.vosk.vosk_flutter_plugin;
+package org.vosk.vosk_flutter;
 
 import android.os.Handler;
 import android.os.Looper;

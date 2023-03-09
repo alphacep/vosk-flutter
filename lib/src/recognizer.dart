@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
-import 'package:vosk_flutter_plugin/vosk_flutter_plugin.dart';
+import 'package:vosk_flutter/vosk_flutter.dart';
 
 /// Class representing the recognizer created by the plugin.
 class Recognizer {

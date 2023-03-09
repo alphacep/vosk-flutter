@@ -1,4 +1,4 @@
-package org.vosk.vosk_flutter_plugin;
+package org.vosk.vosk_flutter;
 
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;

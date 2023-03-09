@@ -1,3 +1,3 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.vosk.vosk_flutter_plugin">
+    package="org.vosk.vosk_flutter">
 </manifest>

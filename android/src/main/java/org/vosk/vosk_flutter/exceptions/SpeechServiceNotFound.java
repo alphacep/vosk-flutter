@@ -1,4 +1,4 @@
-package org.vosk.vosk_flutter_plugin.exceptions;
+package org.vosk.vosk_flutter.exceptions;
 
 public class SpeechServiceNotFound extends Exception {
 
