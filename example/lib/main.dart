@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vosk_flutter/vosk_flutter.dart';
+import 'package:vosk_flutter_example/test_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: VoskFlutterDemo(),
+      home: TestScreen(),
     );
   }
 }

@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -141,17 +144,17 @@ class _TestScreenState extends State<TestScreen> {
         style: ButtonStyle(backgroundColor: MaterialStateProperty.all(color)));
   }
 
-  void _toastFutureError(Future<Object?> future) => future
-      .onError((error, _) => Fluttertoast.showToast(msg: error.toString()));
+  void _toastFutureError(Future<Object?> future) =>
+      future.onError((error, _) => _showMessage(msg: error.toString()));
 
   void _modelCreate() async {
     if (_model != null) {
-      Fluttertoast.showToast(msg: 'The model is already loaded');
+      _showMessage(msg: 'The model is already loaded');
       return;
     }
 
     if (_modelLoading) {
-      Fluttertoast.showToast(msg: 'The model is loading right now');
+      _showMessage(msg: 'The model is loading right now');
       return;
     }
     _modelLoading = true;
@@ -164,7 +167,7 @@ class _TestScreenState extends State<TestScreen> {
   void _recognizerCreate() async {
     final localModel = _model;
     if (localModel == null) {
-      Fluttertoast.showToast(msg: 'Create the model first');
+      _showMessage(msg: 'Create the model first');
       return;
     }
 
@@ -176,7 +179,7 @@ class _TestScreenState extends State<TestScreen> {
   void _recognizerSetMaxAlternatives() async {
     final localRecognizer = _recognizer;
     if (localRecognizer == null) {
-      Fluttertoast.showToast(msg: 'Create the recognizer first');
+      _showMessage(msg: 'Create the recognizer first');
       return;
     }
 
@@ -186,7 +189,7 @@ class _TestScreenState extends State<TestScreen> {
   void _recognizerSetWords() async {
     final localRecognizer = _recognizer;
     if (localRecognizer == null) {
-      Fluttertoast.showToast(msg: 'Create the recognizer first');
+      _showMessage(msg: 'Create the recognizer first');
       return;
     }
 
@@ -196,7 +199,7 @@ class _TestScreenState extends State<TestScreen> {
   void _recognizerSetPartialWords() async {
     final localRecognizer = _recognizer;
     if (localRecognizer == null) {
-      Fluttertoast.showToast(msg: 'Create the recognizer first');
+      _showMessage(msg: 'Create the recognizer first');
       return;
     }
 
@@ -206,7 +209,7 @@ class _TestScreenState extends State<TestScreen> {
   void _recognizerSetGrammar() async {
     final localRecognizer = _recognizer;
     if (localRecognizer == null) {
-      Fluttertoast.showToast(msg: 'Create the recognizer first');
+      _showMessage(msg: 'Create the recognizer first');
       return;
     }
 
@@ -216,7 +219,7 @@ class _TestScreenState extends State<TestScreen> {
   void _recognizerAcceptWaveForm() async {
     final localRecognizer = _recognizer;
     if (localRecognizer == null) {
-      Fluttertoast.showToast(msg: 'Create the recognizer first');
+      _showMessage(msg: 'Create the recognizer first');
       return;
     }
 
@@ -224,49 +227,49 @@ class _TestScreenState extends State<TestScreen> {
         .acceptWaveformBytes((await rootBundle.load('assets/audio/test.wav'))
             .buffer
             .asUint8List())
-        .then((value) => Fluttertoast.showToast(msg: value.toString())));
+        .then((value) => _showMessage(msg: value.toString())));
   }
 
   void _recognizerGetResult() async {
     final localRecognizer = _recognizer;
     if (localRecognizer == null) {
-      Fluttertoast.showToast(msg: 'Create the recognizer first');
+      _showMessage(msg: 'Create the recognizer first');
       return;
     }
 
     _toastFutureError(localRecognizer
         .getResult()
-        .then((value) => Fluttertoast.showToast(msg: value.toString())));
+        .then((value) => _showMessage(msg: value.toString())));
   }
 
   void _recognizerGetPartialResult() async {
     final localRecognizer = _recognizer;
     if (localRecognizer == null) {
-      Fluttertoast.showToast(msg: 'Create the recognizer first');
+      _showMessage(msg: 'Create the recognizer first');
       return;
     }
 
     _toastFutureError(localRecognizer
         .getPartialResult()
-        .then((value) => Fluttertoast.showToast(msg: value.toString())));
+        .then((value) => _showMessage(msg: value.toString())));
   }
 
   void _recognizerGetFinalResult() async {
     final localRecognizer = _recognizer;
     if (localRecognizer == null) {
-      Fluttertoast.showToast(msg: 'Create the recognizer first');
+      _showMessage(msg: 'Create the recognizer first');
       return;
     }
 
     _toastFutureError(localRecognizer
         .getFinalResult()
-        .then((value) => Fluttertoast.showToast(msg: value.toString())));
+        .then((value) => _showMessage(msg: value.toString())));
   }
 
   void _recognizerReset() async {
     final localRecognizer = _recognizer;
     if (localRecognizer == null) {
-      Fluttertoast.showToast(msg: 'Create the recognizer first');
+      _showMessage(msg: 'Create the recognizer first');
       return;
     }
 
@@ -276,7 +279,7 @@ class _TestScreenState extends State<TestScreen> {
   void _recognizerClose() async {
     final localRecognizer = _recognizer;
     if (localRecognizer == null) {
-      Fluttertoast.showToast(msg: 'Create the recognizer first');
+      _showMessage(msg: 'Create the recognizer first');
       return;
     }
 
@@ -287,7 +290,7 @@ class _TestScreenState extends State<TestScreen> {
   void _initSpeechService() async {
     final localRecognizer = _recognizer;
     if (localRecognizer == null) {
-      Fluttertoast.showToast(msg: 'Create the recognizer first');
+      _showMessage(msg: 'Create the recognizer first');
       return;
     }
 
@@ -299,7 +302,7 @@ class _TestScreenState extends State<TestScreen> {
   void _speechServiceStart() async {
     final localSpeechService = _speechService;
     if (localSpeechService == null) {
-      Fluttertoast.showToast(msg: 'Create the speech service first');
+      _showMessage(msg: 'Create the speech service first');
       return;
     }
 
@@ -307,25 +310,25 @@ class _TestScreenState extends State<TestScreen> {
         .start(
             onRecognitionError: (error) =>
                 setState(() => _recognitionError = error.toString()))
-        .then((value) => Fluttertoast.showToast(msg: value.toString())));
+        .then((value) => _showMessage(msg: value.toString())));
   }
 
   void _speechServiceStop() async {
     final localSpeechService = _speechService;
     if (localSpeechService == null) {
-      Fluttertoast.showToast(msg: 'Create the speech service first');
+      _showMessage(msg: 'Create the speech service first');
       return;
     }
 
     _toastFutureError(localSpeechService
         .stop()
-        .then((value) => Fluttertoast.showToast(msg: value.toString())));
+        .then((value) => _showMessage(msg: value.toString())));
   }
 
   void _speechServiceSetPause() async {
     final localSpeechService = _speechService;
     if (localSpeechService == null) {
-      Fluttertoast.showToast(msg: 'Create the speech service first');
+      _showMessage(msg: 'Create the speech service first');
       return;
     }
 
@@ -335,7 +338,7 @@ class _TestScreenState extends State<TestScreen> {
   void _speechServiceReset() async {
     final localSpeechService = _speechService;
     if (localSpeechService == null) {
-      Fluttertoast.showToast(msg: 'Create the speech service first');
+      _showMessage(msg: 'Create the speech service first');
       return;
     }
 
@@ -345,24 +348,33 @@ class _TestScreenState extends State<TestScreen> {
   void _speechServiceCancel() async {
     final localSpeechService = _speechService;
     if (localSpeechService == null) {
-      Fluttertoast.showToast(msg: 'Create the speech service first');
+      _showMessage(msg: 'Create the speech service first');
       return;
     }
 
     _toastFutureError(localSpeechService
         .cancel()
-        .then((value) => Fluttertoast.showToast(msg: value.toString())));
+        .then((value) => _showMessage(msg: value.toString())));
   }
 
   void _speechServiceDestroy() async {
     final localSpeechService = _speechService;
     if (localSpeechService == null) {
-      Fluttertoast.showToast(msg: 'Create the speech service first');
+      _showMessage(msg: 'Create the speech service first');
       return;
     }
 
     _toastFutureError(localSpeechService
         .dispose()
         .then((value) => setState(() => _speechService = null)));
+  }
+
+  void _showMessage({required String msg}) {
+    // TODO display message for all the platforms somehow
+    if (Platform.isAndroid || Platform.isIOS || kIsWeb) {
+      Fluttertoast.showToast(msg: msg);
+    } else {
+      // print("MESSAGE: " + msg);
+    }
   }
 }
