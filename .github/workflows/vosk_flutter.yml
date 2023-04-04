@@ -99,7 +99,7 @@ jobs:
     name: "Check pub.dev requirements"
     timeout-minutes: 5
     runs-on: macos-latest
-    needs: [android_integration_test]
+    needs: [android_integration_test, linux_integration_test]
     steps:
       - name: "Checkout repository"
         uses: actions/checkout@v3
