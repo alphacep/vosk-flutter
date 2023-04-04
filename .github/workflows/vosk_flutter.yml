@@ -97,12 +97,10 @@ jobs:
       - name: "Install Flutter"
         run: ./.github/workflows/scripts/install_flutter.sh
 
-      - name: "Create virtual display"
-        run: export DISPLAY=:99
-
       - name: "Linux Integration Test"
         run: |
             cd example
+            export DISPLAY=:99
             sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 & flutter test integration_test/common_test.dart -d linux
 
   pub_dev_publish_check:
