@@ -81,9 +81,12 @@ print(await recognizer.getFinalResult());
 ```
 
 ### Recognize microphone data
+#### Android
 ```dart
 final speechService = await vosk.initSpeechService(recognizer);
 speechService.onPartial().forEach((partial) => print(partial));
 speechService.onResult().forEach((result) => print(result));
 await speechService.start();
 ```
+#### Linux
+Use any suitable plugin to get the microphone data and [pass it to a recognizer](#recognize-audio-data)
