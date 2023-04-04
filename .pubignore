@@ -1,0 +1,11 @@
+# IntelliJ related
+*.iml
+
+build/
+
+example/assets/models/
+
+linux/libs/
+!linux/libs/.keepme
+
+vosk-api/

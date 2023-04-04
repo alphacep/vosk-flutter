@@ -1,19 +1,32 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:ffi';
+import 'dart:io';
 
+import 'package:ffi/ffi.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:vosk_flutter/src/model.dart';
-import 'package:vosk_flutter/src/model_loader.dart';
-import 'package:vosk_flutter/src/recognizer.dart';
-import 'package:vosk_flutter/src/speech_service.dart';
+import 'package:vosk_flutter/src/generated_vosk_bindings.dart';
+import 'package:vosk_flutter/src/utils.dart';
+import 'package:vosk_flutter/vosk_flutter.dart';
 
 /// Provides access to the Vosk speech recognition API.
 class VoskFlutterPlugin {
   VoskFlutterPlugin._() {
-    _channel.setMethodCallHandler(_methodCallHandler);
+    if (Platform.isLinux) {
+      _voskLibrary = _loadVoskLibrary();
+    } else if (Platform.isAndroid) {
+      _channel.setMethodCallHandler(_methodCallHandler);
+    } else {
+      throw UnsupportedError(
+        'Platform ${Platform.operatingSystem} is not supported',
+      );
+    }
   }
+
+  late VoskLibrary _voskLibrary;
 
   /// Get plugin instance.
   ///
@@ -29,9 +42,18 @@ class VoskFlutterPlugin {
   /// See [ModelLoader]
   Future<Model> createModel(String modelPath) {
     final completer = Completer<Model>();
-    _pendingModels[modelPath] = completer;
 
-    _channel.invokeMethod('model.create', modelPath);
+    if (Platform.isLinux) {
+      compute(_loadModel, modelPath).then(
+        (modelPointer) => completer.complete(
+          Model(modelPath, _channel, Pointer.fromAddress(modelPointer)),
+        ),
+        onError: completer.completeError,
+      );
+    } else if (Platform.isAndroid) {
+      _pendingModels[modelPath] = completer;
+      _channel.invokeMethod('model.create', modelPath);
+    }
     return completer.future;
   }
 
@@ -46,6 +68,29 @@ class VoskFlutterPlugin {
     required int sampleRate,
     List<String>? grammar,
   }) async {
+    if (Platform.isLinux) {
+      return using((arena) {
+        final recognizerPointer = grammar == null
+            ? _voskLibrary.vosk_recognizer_new(
+                model.modelPointer!,
+                sampleRate.toDouble(),
+              )
+            : _voskLibrary.vosk_recognizer_new_grm(
+                model.modelPointer!,
+                sampleRate.toDouble(),
+                jsonEncode(grammar).toCharPtr(arena),
+              );
+        return Recognizer(
+          id: -1,
+          model: model,
+          sampleRate: sampleRate,
+          channel: _channel,
+          recognizerPointer: recognizerPointer,
+          voskLibrary: _voskLibrary,
+        );
+      });
+    }
+
     final args = <String, dynamic>{
       'modelPath': model.path,
       'sampleRate': sampleRate,
@@ -53,7 +98,6 @@ class VoskFlutterPlugin {
     if (grammar != null) {
       args['grammar'] = jsonEncode(grammar);
     }
-
     final id = await _channel.invokeMethod('recognizer.create', args);
     return Recognizer(
       id: id as int,
@@ -95,6 +139,27 @@ class VoskFlutterPlugin {
       default:
         log('Unsupported method: ${call.method}', name: 'VOSK_PLUGIN');
     }
+  }
+
+  static VoskLibrary _loadVoskLibrary() {
+    final libraryPath = Platform.environment['LIBVOSK_PATH']!;
+    final dylib = DynamicLibrary.open(libraryPath);
+    return VoskLibrary(dylib);
+  }
+
+  /// Method used to load a model in a separate isolate.
+  static int _loadModel(String modelPath) {
+    final voskLib = _loadVoskLibrary();
+    final modelPointer =
+        using((arena) => voskLib.vosk_model_new(modelPath.toCharPtr(arena)));
+
+    if (modelPointer == nullptr) {
+      // TODO(sergsavchuk): throw a custom error after deletion of the
+      // MethodChannel
+      // ignore: only_throw_errors
+      throw 'Failed to load model';
+    }
+    return modelPointer.address;
   }
 }
 
