@@ -58,22 +58,22 @@ class _InstallCommand extends Command<void> {
     }
   }
 
-  Future<bool> shouldSkipInstall(Pubspec realmPubspec) async {
+  Future<bool> shouldSkipInstall(Pubspec voskPubspec) async {
     final pubspecFile = await File('pubspec.yaml').readAsString();
     final projectPubspec = Pubspec.parse(pubspecFile);
 
     if (packageName == projectPubspec.name) {
       print(
         'Running install command inside ${projectPubspec.name} package which '
-        'is the development package for Realm.\n Skipping download as it '
+        'is the development package for VOSK.\n Skipping download as it '
         'is expected that you build the packages manually.',
       );
       return true;
     }
 
-    if (realmPubspec.publishTo == 'none') {
+    if (voskPubspec.publishTo == 'none') {
       print(
-        "Referencing $packageName@${realmPubspec.version} which hasn't been "
+        "Referencing $packageName@${voskPubspec.version} which hasn't been "
         'published (publish_to: none). Skipping download.',
       );
       return true;
