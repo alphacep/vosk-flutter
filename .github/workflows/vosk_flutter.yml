@@ -91,7 +91,7 @@ jobs:
         run: chmod +x ./.github/workflows/scripts/*.sh
 
       - name: "Install required tools"
-        run: sudo apt-get install ninja-build
+        run: sudo apt-get install ninja-build libgtk-3-dev
 
       - name: "Install Flutter"
         run: ./.github/workflows/scripts/install_flutter.sh
