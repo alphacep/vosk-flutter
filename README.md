@@ -1,7 +1,7 @@
 # Vosk Flutter Plugin
 
 [![style: very good analysis](https://img.shields.io/badge/style-very_good_analysis-B22C89.svg)](https://pub.dev/packages/very_good_analysis)
-[![vosk_flutter](https://github.com/alphacep/vosk-flutter/actions/workflows/vosk_flutter.yml/badge.svg?branch=main)](https://github.com/alphacep/vosk-flutter/actions/workflows/vosk_flutter.yml?query=branch%3Amain)
+[![vosk_flutter](https://github.com/alphacep/vosk-flutter/actions/workflows/vosk_flutter.yml/badge.svg?branch=master)](https://github.com/alphacep/vosk-flutter/actions/workflows/vosk_flutter.yml?query=branch%3Amaster)
 
 Flutter plugin for Vosk speech recognition.
 
@@ -9,21 +9,22 @@ Flutter plugin for Vosk speech recognition.
 
 | Android | iOS | MacOS | Web | Linux | Windows |
 | :-----: | :-: | :---: | :-: | :---: | :----: |
-|   ✔    | ➖  |  ➖   | ➖  |  ➖   |   ➖   |
+|   ✔    | ➖  |  ➖   | ➖  |  ✔   |   ➖   |
 
 ## Usage
 
 ### Configurations
-Add this pro guard rules in `android/app/proguard-rules.pro`(if the file does not exist - create it):
-```properties
--keep class com.sun.jna.* { *; }
--keepclassmembers class * extends com.sun.jna.* { public *; }
-```
 
 Add this plugin to your `pubspec.yaml`:
 ```yaml
 vosk_flutter:
   git: https://github.com/alphacep/vosk-flutter
+```
+#### Android
+Add this pro guard rules in `android/app/proguard-rules.pro`(if the file does not exist - create it):
+```properties
+-keep class com.sun.jna.* { *; }
+-keepclassmembers class * extends com.sun.jna.* { public *; }
 ```
 
 If you want to use a microphone input, add the microphone permission to your `AndroidManifest.xml`:
