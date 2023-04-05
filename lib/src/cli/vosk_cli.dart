@@ -37,7 +37,7 @@ class _InstallCommand extends Command<void> {
 
   @override
   final description =
-      'Download & install Vosk native binaries into a Flutter project';
+      'Download & install Vosk native binaries into a Flutter project ';
 
   @override
   final name = 'install';
