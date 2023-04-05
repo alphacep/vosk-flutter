@@ -1,8 +1,10 @@
 name: vosk_flutter
 
 on:
+  workflow_dispatch:
   pull_request:
     paths:
+      - "**"
       - "!**.md"
       - "!**.gitignore"
 
@@ -77,11 +79,36 @@ jobs:
           profile: Nexus 5X
           script: ./.github/workflows/scripts/android_integration_test.sh
 
+  linux_integration_test:
+    name: "Linux integration test"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [analyze, check_formatting, unit_test]
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v3
+      - name: "Configure scripts "
+        run: chmod +x ./.github/workflows/scripts/*.sh
+
+      - name: "Install required tools"
+        run: sudo apt-get install ninja-build libgtk-3-dev
+
+
+      - name: "Install Flutter"
+        run: ./.github/workflows/scripts/install_flutter.sh
+
+      - name: "Linux Integration Test"
+        run: |
+            cd example
+            export DISPLAY=:99
+            # Use Xvfb to create virtual display and run integration test on it
+            sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 & flutter test integration_test/common_test.dart -d linux
+
   pub_dev_publish_check:
     name: "Check pub.dev requirements"
     timeout-minutes: 5
     runs-on: macos-latest
-    needs: [android_integration_test]
+    needs: [android_integration_test, linux_integration_test]
     steps:
       - name: "Checkout repository"
         uses: actions/checkout@v3
