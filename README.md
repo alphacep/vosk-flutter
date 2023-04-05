@@ -15,11 +15,8 @@ Flutter plugin for Vosk speech recognition.
 
 ### Configurations
 
-Add this plugin to your `pubspec.yaml`:
-```yaml
-vosk_flutter:
-  git: https://github.com/alphacep/vosk-flutter
-```
+Follow the instruction at the [Installing page of the package](https://pub.dev/packages/vosk_flutter/install).
+
 #### Android
 Add this pro guard rules in `android/app/proguard-rules.pro`(if the file does not exist - create it):
 ```properties
@@ -90,4 +87,4 @@ speechService.onResult().forEach((result) => print(result));
 await speechService.start();
 ```
 #### Linux
-Use any suitable plugin to get the microphone data and [pass it to a recognizer](#recognize-audio-data)
+Use any suitable plugin to get the microphone input and [pass it to a recognizer](#recognize-audio-data)
