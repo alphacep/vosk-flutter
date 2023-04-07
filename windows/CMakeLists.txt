@@ -1,23 +1,20 @@
-# The Flutter tooling requires that developers have CMake 3.10 or later
-# installed. You should not increase this version, as doing so will cause
-# the plugin to fail to compile for some customers of the plugin.
-cmake_minimum_required(VERSION 3.10)
+# The Flutter tooling requires that developers have a version of Visual Studio
+# installed that includes CMake 3.14 or later. You should not increase this
+# version, as doing so will cause the plugin to fail to compile for some
+# customers of the plugin.
+cmake_minimum_required(VERSION 3.14)
 
 # Project-level configuration.
 set(PROJECT_NAME "vosk_flutter")
 project(${PROJECT_NAME} LANGUAGES CXX)
 
 # This value is used when generating builds using this plugin, so it must
-# not be changed.
+# not be changed
 set(PLUGIN_NAME "vosk_flutter_plugin")
 
 # Define the plugin library target. Its name must not be changed (see comment
 # on PLUGIN_NAME above).
-#
-# Any new source files that you add to the plugin should be added here.
-add_library(${PLUGIN_NAME} SHARED
-  "vosk_flutter_plugin.cc"
-)
+add_library(${PLUGIN_NAME} SHARED "vosk_flutter_plugin.cpp")
 
 # Apply a standard set of build settings that are configured in the
 # application-level CMakeLists.txt. This can be removed for plugins that want
@@ -35,21 +32,23 @@ target_compile_definitions(${PLUGIN_NAME} PRIVATE FLUTTER_PLUGIN_IMPL)
 # dependencies here.
 target_include_directories(${PLUGIN_NAME} INTERFACE
   "${CMAKE_CURRENT_SOURCE_DIR}/include")
-target_link_libraries(${PLUGIN_NAME} PRIVATE flutter)
-target_link_libraries(${PLUGIN_NAME} PRIVATE PkgConfig::GTK)
+target_link_libraries(${PLUGIN_NAME} PRIVATE flutter flutter_wrapper_plugin)
 
 # List of absolute paths to libraries that should be bundled with the plugin.
 # This list could contain prebuilt libraries, or libraries created by an
 # external build triggered from this build file.
 set(vosk_flutter_bundled_libraries
-  "${CMAKE_CURRENT_SOURCE_DIR}/libs/libvosk.so"
+  "${CMAKE_CURRENT_SOURCE_DIR}/libs/libvosk.dll"
+  "${CMAKE_CURRENT_SOURCE_DIR}/libs/libgcc_s_seh-1.dll"
+  "${CMAKE_CURRENT_SOURCE_DIR}/libs/libstdc++-6.dll"
+  "${CMAKE_CURRENT_SOURCE_DIR}/libs/libwinpthread-1.dll"
   PARENT_SCOPE
 )
 
 #message ("FLUTTER_ROOT is $ENV{FLUTTER_ROOT}")
 
 # Install VOSK binaries.
-execute_process(COMMAND "$ENV{FLUTTER_ROOT}/bin/flutter" "pub" "run" "vosk_flutter" "install" "-t" "linux"
+execute_process(COMMAND "$ENV{FLUTTER_ROOT}\\bin\\flutter.bat" "pub" "run" "vosk_flutter" "install" "-t" "windows"
         OUTPUT_VARIABLE output
         RESULT_VARIABLE result
         COMMAND_ERROR_IS_FATAL ANY

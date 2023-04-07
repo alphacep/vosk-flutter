@@ -37,5 +37,4 @@ build/
 # Ignore the flutter sdk dir used in Github Actions
 _flutter/
 
-linux/libs/
-!linux/libs/.keepme
+*/libs/

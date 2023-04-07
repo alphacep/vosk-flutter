@@ -1,5 +1,6 @@
 # Vosk Flutter Plugin
 
+[![pub package](https://img.shields.io/pub/v/vosk_flutter.svg)](https://pub.dev/packages/vosk_flutter)
 [![style: very good analysis](https://img.shields.io/badge/style-very_good_analysis-B22C89.svg)](https://pub.dev/packages/very_good_analysis)
 [![vosk_flutter](https://github.com/alphacep/vosk-flutter/actions/workflows/vosk_flutter.yml/badge.svg?branch=master)](https://github.com/alphacep/vosk-flutter/actions/workflows/vosk_flutter.yml?query=branch%3Amaster)
 
@@ -9,7 +10,7 @@ Flutter plugin for Vosk speech recognition.
 
 | Android | iOS | MacOS | Web | Linux | Windows |
 | :-----: | :-: | :---: | :-: | :---: | :----: |
-|   ✔    | ➖  |  ➖   | ➖  |  ✔   |   ➖   |
+|   ✔    | ➖   |  ➖   | ➖   |  ✔   |    ✔   |
 
 ## Usage
 
@@ -86,5 +87,5 @@ speechService.onPartial().forEach((partial) => print(partial));
 speechService.onResult().forEach((result) => print(result));
 await speechService.start();
 ```
-#### Linux
+#### Linux & Windows
 Use any suitable plugin to get the microphone input and [pass it to a recognizer](#recognize-audio-data)
