@@ -48,6 +48,8 @@ class _InstallCommand extends Command<void> {
     switch (options.targetOsType!) {
       case TargetOsType.linux:
         return path.join(voskPackagePath, 'linux', 'libs');
+      case TargetOsType.windows:
+        return path.join(voskPackagePath, 'windows', 'libs');
     }
   }
 
@@ -55,6 +57,8 @@ class _InstallCommand extends Command<void> {
     switch (options.targetOsType!) {
       case TargetOsType.linux:
         return 'https://github.com/alphacep/vosk-api/releases/download/v$libVersion/vosk-linux-x86_64-$libVersion.zip';
+      case TargetOsType.windows:
+        return 'https://github.com/alphacep/vosk-api/releases/download/v$libVersion/vosk-win64-$libVersion.zip';
     }
   }
 

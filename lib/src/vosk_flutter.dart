@@ -15,7 +15,7 @@ import 'package:vosk_flutter/vosk_flutter.dart';
 /// Provides access to the Vosk speech recognition API.
 class VoskFlutterPlugin {
   VoskFlutterPlugin._() {
-    if (Platform.isLinux) {
+    if (_supportsFFI()) {
       _voskLibrary = _loadVoskLibrary();
     } else if (Platform.isAndroid) {
       _channel.setMethodCallHandler(_methodCallHandler);
@@ -43,7 +43,7 @@ class VoskFlutterPlugin {
   Future<Model> createModel(String modelPath) {
     final completer = Completer<Model>();
 
-    if (Platform.isLinux) {
+    if (_supportsFFI()) {
       compute(_loadModel, modelPath).then(
         (modelPointer) => completer.complete(
           Model(modelPath, _channel, Pointer.fromAddress(modelPointer)),
@@ -68,7 +68,7 @@ class VoskFlutterPlugin {
     required int sampleRate,
     List<String>? grammar,
   }) async {
-    if (Platform.isLinux) {
+    if (_supportsFFI()) {
       return using((arena) {
         final recognizerPointer = grammar == null
             ? _voskLibrary.vosk_recognizer_new(
@@ -141,8 +141,18 @@ class VoskFlutterPlugin {
     }
   }
 
+  bool _supportsFFI() => Platform.isLinux || Platform.isWindows;
+
   static VoskLibrary _loadVoskLibrary() {
-    final libraryPath = Platform.environment['LIBVOSK_PATH']!;
+    String libraryPath;
+    if (Platform.isLinux) {
+      libraryPath = Platform.environment['LIBVOSK_PATH']!;
+    } else if (Platform.isWindows) {
+      libraryPath = 'libvosk.dll';
+    } else {
+      throw UnsupportedError('Unsupported platform');
+    }
+
     final dylib = DynamicLibrary.open(libraryPath);
     return VoskLibrary(dylib);
   }

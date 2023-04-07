@@ -159,7 +159,7 @@ class _VoskFlutterDemoState extends State<VoskFlutterDemo> {
     } catch (e) {
       _error = e.toString() +
           '\n\n Make sure fmedia(https://stsaz.github.io/fmedia/)'
-              ' is installed on Linux and Windows';
+              ' is installed on Linux';
     }
   }
 
@@ -174,7 +174,7 @@ class _VoskFlutterDemoState extends State<VoskFlutterDemo> {
     } catch (e) {
       _error = e.toString() +
           '\n\n Make sure fmedia(https://stsaz.github.io/fmedia/)'
-              ' is installed on Linux and Windows';
+              ' is installed on Linux';
     }
   }
 }

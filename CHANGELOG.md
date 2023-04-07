@@ -1,3 +1,7 @@
+## 0.3.48
+
+- Add Windows support
+
 ## 0.3.47
 
 - Add Linux support
