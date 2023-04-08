@@ -1,0 +1,35 @@
+name: vosk_flutter
+
+on:
+  workflow_dispatch:
+
+jobs:
+  android_integration_test:
+    name: "Android integration test"
+    runs-on: macos-latest
+    timeout-minutes: 40
+    strategy:
+      matrix:
+        android-arch: [ arm64-v8a, armeabi-v7a ]
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v3
+      - name: "Configure scripts"
+        run: chmod +x ./.github/workflows/scripts/*.sh
+
+      - name: "Install Flutter"
+        run: ./.github/workflows/scripts/install_flutter.sh
+      - uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: "11"
+
+      - name: "Android Integration Test"
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          cores: 3
+          target: google_apis
+          arch: ${{ matrix.android-arch }}
+          profile: Nexus 5X
+          script: cd example && flutter test integration_test/common_test.dart
