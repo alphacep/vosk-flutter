@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:mic_stream/mic_stream.dart';
 import 'package:record/record.dart';
 import 'package:vosk_flutter/vosk_flutter.dart';
-import 'package:vosk_flutter_example/test_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -62,11 +62,7 @@ class _VoskFlutterDemoState extends State<VoskFlutterDemo> {
         .then((value) => _recognizer = value)
         .then((recognizer) {
       if (Platform.isAndroid) {
-        _vosk
-            .initSpeechService(_recognizer!) // init speech service
-            .then((speechService) =>
-                setState(() => _speechService = speechService))
-            .catchError((e) => setState(() => _error = e.toString()));
+        _speechService = SpeechService(recognizer);
       }
     }).catchError((e) {
       setState(() => _error = e.toString());
@@ -89,11 +85,11 @@ class _VoskFlutterDemoState extends State<VoskFlutterDemo> {
         ),
       );
     } else {
-      return Platform.isAndroid ? _androidExample() : _commonExample();
+      return Platform.isAndroid ? _micExample() : _recordingExample();
     }
   }
 
-  Widget _androidExample() {
+  Widget _micExample() {
     return Scaffold(
       body: Center(
         child: Column(
@@ -102,9 +98,15 @@ class _VoskFlutterDemoState extends State<VoskFlutterDemo> {
             ElevatedButton(
                 onPressed: () async {
                   if (_recognitionStarted) {
-                    await _speechService!.stop();
+                    _speechService!.stop();
                   } else {
-                    await _speechService!.start();
+                    final micStream = await MicStream.microphone(
+                        audioFormat: AudioFormat.ENCODING_PCM_16BIT);
+                    if (micStream != null) {
+                      _speechService!.start(micStream);
+                    } else {
+                      _error = "Can't access microphone";
+                    }
                   }
                   setState(() => _recognitionStarted = !_recognitionStarted);
                 },
@@ -127,7 +129,7 @@ class _VoskFlutterDemoState extends State<VoskFlutterDemo> {
     );
   }
 
-  Widget _commonExample() {
+  Widget _recordingExample() {
     return Scaffold(
       body: Center(
         child: Column(
@@ -169,7 +171,7 @@ class _VoskFlutterDemoState extends State<VoskFlutterDemo> {
       if (filePath != null) {
         final bytes = File(filePath).readAsBytesSync();
         _recognizer!.acceptWaveformBytes(bytes);
-        _fileRecognitionResult = await _recognizer!.getFinalResult();
+        _fileRecognitionResult = _recognizer!.getFinalResult();
       }
     } catch (e) {
       _error = e.toString() +

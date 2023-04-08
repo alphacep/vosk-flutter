@@ -2,70 +2,83 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:vosk_flutter/src/recognizer.dart';
-import 'package:vosk_flutter/src/vosk_flutter.dart';
 
-/// Speech recognition service used to process audio input from the device's
-/// microphone.
+/// Speech recognition service used to process audio input from the provided
+/// audio data stream.
 class SpeechService {
-  /// Use [VoskFlutterPlugin.initSpeechService] to create an instance
-  /// of [SpeechService].
-  SpeechService(this._channel);
+  /// Create a new [SpeechService] that will use the provided [_recognizer] for
+  /// speech recognition.
+  SpeechService(this._recognizer);
 
-  final MethodChannel _channel;
+  final Recognizer _recognizer;
+  StreamSubscription<Uint8List>? _micSubscription;
 
-  Stream<String>? _resultStream;
-  Stream<String>? _partialResultStream;
-  StreamSubscription<void>? _errorStreamSubscription;
+  final StreamController<String> _resultStreamController =
+      StreamController.broadcast();
+  final StreamController<String> _partialResultStreamController =
+      StreamController.broadcast();
 
-  /// Start recognition.
+  /// Whether the recognition is paused.
+  bool paused = false;
+
+  /// Start recognition of the provided [audioStream].
+  /// [audioStream] must be in PCM 16-bit mono format.
   /// Use [onResult] and [onPartial] to get recognition results.
-  Future<bool?> start({Function? onRecognitionError}) {
-    _errorStreamSubscription ??= EventChannel(
-      'error_event_channel',
-      const StandardMethodCodec(),
-      _channel.binaryMessenger,
-    ).receiveBroadcastStream().listen(null, onError: onRecognitionError);
+  /// Returns false if already started.
+  bool start(Stream<Uint8List> audioStream) {
+    if (_micSubscription != null) {
+      return false;
+    }
 
-    return _channel.invokeMethod<bool>('speechService.start');
+    paused = false;
+    _micSubscription = audioStream.listen((bytes) {
+      if (paused) {
+        return;
+      }
+
+      if (_recognizer.acceptWaveformBytes(bytes)) {
+        _resultStreamController.add(_recognizer.getResult());
+      } else {
+        _partialResultStreamController.add(_recognizer.getPartialResult());
+      }
+    });
+    return true;
   }
 
   /// Stop recognition.
-  Future<bool?> stop() {
-    _errorStreamSubscription?.cancel();
-    return _channel.invokeMethod<bool>('speechService.stop');
-  }
+  /// Returns false if already stopped.
+  bool stop() {
+    if (_micSubscription == null) {
+      return false;
+    }
 
-  /// Pause/unpause recognition.
-  Future<bool?> setPause({required bool paused}) =>
-      _channel.invokeMethod<bool>('speechService.setPause', paused);
+    _micSubscription?.cancel();
+    _micSubscription = null;
+
+    if (!paused) {
+      _resultStreamController.add(_recognizer.getFinalResult());
+    }
+
+    return true;
+  }
 
   /// Reset recognition.
   /// See [Recognizer.reset].
-  Future<bool?> reset() => _channel.invokeMethod<bool>('speechService.reset');
+  void reset() => _recognizer.reset();
 
-  /// Cancel recognition.
-  Future<bool?> cancel() {
-    _errorStreamSubscription?.cancel();
-    return _channel.invokeMethod<bool>('speechService.cancel');
-  }
+  /// Stop recognition, but don't emit final result.
+  /// Returns false if already started.
+  bool cancel() {
+    if (_micSubscription != null) {
+      paused = true;
+    }
 
-  /// Release service resources.
-  Future<void> dispose() {
-    _errorStreamSubscription?.cancel();
-    return _channel.invokeMethod<void>('speechService.destroy');
+    return stop();
   }
 
   /// Get stream with voice recognition results.
-  Stream<String> onResult() => _resultStream ??= EventChannel(
-        'result_event_channel',
-        const StandardMethodCodec(),
-        _channel.binaryMessenger,
-      ).receiveBroadcastStream().map((result) => result.toString());
+  Stream<String> onResult() => _resultStreamController.stream;
 
   /// Get stream with voice recognition partial results.
-  Stream<String> onPartial() => _partialResultStream ??= EventChannel(
-        'partial_event_channel',
-        const StandardMethodCodec(),
-        _channel.binaryMessenger,
-      ).receiveBroadcastStream().map((result) => result.toString());
+  Stream<String> onPartial() => _partialResultStreamController.stream;
 }

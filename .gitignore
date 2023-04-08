@@ -37,4 +37,6 @@ build/
 # Ignore the flutter sdk dir used in Github Actions
 _flutter/
 
+# Ignore Vosk binaries
 */libs/
+android/src/main/cpp/lib/

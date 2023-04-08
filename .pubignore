@@ -6,8 +6,11 @@ build/
 # Ignore the flutter sdk dir used in Github Actions
 _flutter/
 
+# Ignore Vosk models used in the example
 example/assets/models/
 
+# Ignore Vosk binaries
 */libs/
+android/src/main/cpp/lib/
 
 vosk-api/

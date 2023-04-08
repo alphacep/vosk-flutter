@@ -1,3 +1,7 @@
+@OnPlatform({
+  // Give Android some extra wiggle-room before timing out.
+  'android': Timeout.factor(2)
+})
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -98,7 +102,7 @@ void main() {
         model: model,
         sampleRate: sampleRate,
       );
-      await recognizerWithSetGrammar.setGrammar(grammar);
+      recognizerWithSetGrammar.setGrammar(grammar);
 
       final constructorResults = await recognizeAudio(
         audioBytes,
@@ -114,14 +118,14 @@ void main() {
 
     test('Returns results with alternatives when #setMaxAlternatives used',
         () async {
-      await recognizer.setMaxAlternatives(2);
+      recognizer.setMaxAlternatives(2);
       final results = await recognizeAudio(audioBytes, recognizer);
 
       expect(results[0], contains('alternatives'));
     });
 
     test('Returns results with words when #setWords used', () async {
-      await recognizer.setWords(words: true);
+      recognizer.setWords(words: true);
       final results = await recognizeAudio(audioBytes, recognizer);
 
       expect(results[0], contains('word'));
@@ -129,18 +133,18 @@ void main() {
 
     test('Returns partial results with words when #setPartialWords used',
         () async {
-      await recognizer.setPartialWords(partialWords: true);
-      await recognizer.acceptWaveformBytes(audioBytes);
-      final partialResult = await recognizer.getPartialResult();
+      recognizer.setPartialWords(partialWords: true);
+      recognizer.acceptWaveformBytes(audioBytes);
+      final partialResult = recognizer.getPartialResult();
 
       expect(partialResult, contains('word'));
     });
 
     test('Resets results when #reset used', () async {
-      await recognizer.acceptWaveformBytes(audioBytes);
-      await recognizer.reset();
+      recognizer.acceptWaveformBytes(audioBytes);
+      recognizer.reset();
 
-      final partialResult = await recognizer.getPartialResult();
+      final partialResult = recognizer.getPartialResult();
 
       expect(jsonDecode(partialResult)['text'], equals(''));
     });
@@ -159,17 +163,17 @@ Future<List<String>> recognizeAudio(
   int pos = 0;
 
   while (pos + chunkSize < audioBytes.length) {
-    final resultReady = await recognizer.acceptWaveformBytes(
+    final resultReady = recognizer.acceptWaveformBytes(
         Uint8List.fromList(audioBytes.getRange(pos, pos + chunkSize).toList()));
     pos += chunkSize;
 
     if (resultReady) {
-      results.add(await recognizer.getResult());
+      results.add(recognizer.getResult());
     }
   }
-  await recognizer.acceptWaveformBytes(
+  recognizer.acceptWaveformBytes(
       Uint8List.fromList(audioBytes.getRange(pos, audioBytes.length).toList()));
-  results.add(await recognizer.getFinalResult());
+  results.add(recognizer.getFinalResult());
 
   return results;
 }

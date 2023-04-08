@@ -4,5 +4,8 @@ enum TargetOsType {
   linux,
 
   /// windows-x86_64 OS.
-  windows
+  windows,
+
+  /// android OS
+  android
 }

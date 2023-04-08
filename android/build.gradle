@@ -5,9 +5,6 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        maven {
-            url 'https://alphacephei.com/maven/'
-        }
     }
 
     dependencies {
@@ -19,9 +16,6 @@ rootProject.allprojects {
     repositories {
         google()
         mavenCentral()
-        maven {
-            url 'https://alphacephei.com/maven/'
-        }
     }
 }
 
@@ -38,15 +32,43 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 30
-//        ndk {
-//            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86_64', 'x86'
-//        }
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs += ["src/main/cpp/lib/"]
+        }
     }
 }
 
-dependencies {
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'net.java.dev.jna:jna:5.13.0@aar'
-    implementation 'com.alphacephei:vosk-android:0.3.46@aar'
-//    implementation project(':models')
+def getPaths() {
+    def localProperties = new Properties()
+    def localPropertiesFile = rootProject.file('local.properties')
+    if (localPropertiesFile.exists()) {
+        localPropertiesFile.withReader('UTF-8') { reader ->
+            localProperties.load(reader)
+        }
+    }
+
+    def flutterRoot = localProperties.getProperty('flutter.sdk')
+    def flutterExecutablePath = 'flutter'
+    if (flutterRoot != null) {
+        flutterExecutablePath = "${flutterRoot}${File.separator}bin${File.separator}flutter"
+    }
+
+    //on Windows use flutter.bat instead
+    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+        flutterExecutablePath += '.bat'
+    }
+
+    return [flutterRoot, flutterExecutablePath]
 }
+
+task downloadVoskBinaries(type: Exec) {
+    def (flutterRoot, flutterExecutablePath) = getPaths()
+
+    workingDir "${project.rootProject.projectDir}${File.separator}.."
+    commandLine flutterExecutablePath, 'pub', 'run', 'vosk_flutter', 'install', '-t', 'android'
+}
+
+preBuild.dependsOn downloadVoskBinaries

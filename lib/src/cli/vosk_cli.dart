@@ -50,6 +50,15 @@ class _InstallCommand extends Command<void> {
         return path.join(voskPackagePath, 'linux', 'libs');
       case TargetOsType.windows:
         return path.join(voskPackagePath, 'windows', 'libs');
+      case TargetOsType.android:
+        return path.join(
+          voskPackagePath,
+          'android',
+          'src',
+          'main',
+          'cpp',
+          'lib',
+        );
     }
   }
 
@@ -59,6 +68,8 @@ class _InstallCommand extends Command<void> {
         return 'https://github.com/alphacep/vosk-api/releases/download/v$libVersion/vosk-linux-x86_64-$libVersion.zip';
       case TargetOsType.windows:
         return 'https://github.com/alphacep/vosk-api/releases/download/v$libVersion/vosk-win64-$libVersion.zip';
+      case TargetOsType.android:
+        return 'https://github.com/alphacep/vosk-api/releases/download/v$libVersion/vosk-android-$libVersion.zip';
     }
   }
 
@@ -154,17 +165,20 @@ class _InstallCommand extends Command<void> {
       destinationDir.absolute.path,
     );
 
-    final extractedDirectory = path.join(
-      destinationDir.absolute.path,
-      path.basenameWithoutExtension(binaryUrl),
-    );
-    for (final filesystemEntity in Directory(extractedDirectory).listSync()) {
-      filesystemEntity.renameSync(
-        path.join(
-          destinationDir.absolute.path,
-          path.basename(filesystemEntity.absolute.path),
-        ),
+    if (options.targetOsType != TargetOsType.android) {
+      final extractedDirectory = path.join(
+        destinationDir.absolute.path,
+        path.basenameWithoutExtension(binaryUrl),
       );
+
+      for (final filesystemEntity in Directory(extractedDirectory).listSync()) {
+        filesystemEntity.renameSync(
+          path.join(
+            destinationDir.absolute.path,
+            path.basename(filesystemEntity.absolute.path),
+          ),
+        );
+      }
     }
 
     final versionFile =

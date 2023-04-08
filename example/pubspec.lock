@@ -207,6 +207,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.8.0"
+  mic_stream:
+    dependency: "direct main"
+    description:
+      name: mic_stream
+      sha256: "4efbf12461452ba7a576a16a7400d5ea77466df18ea806a3fbd79b32b44e21bf"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.5"
   package_config:
     dependency: transitive
     description:

@@ -20,6 +20,7 @@ dependencies:
 
   wav: ^1.2.0
   record: ^4.4.4
+  mic_stream: ^0.6.5
 
 dev_dependencies:
   flutter_test:
