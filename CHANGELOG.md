@@ -1,3 +1,8 @@
+## 0.4.0
+
+- Use FFI on Android instead of MethodChannel
+- SpeechService no longer uses the device's microphone
+
 ## 0.3.48
 
 - Add Windows support

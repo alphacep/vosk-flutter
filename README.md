@@ -14,29 +14,19 @@ Flutter plugin for Vosk speech recognition.
 
 ## Usage
 
-### Configurations
+### Installation
 
-Follow the instruction at the [Installing page of the package](https://pub.dev/packages/vosk_flutter/install).
-
-#### Android
-Add this pro guard rules in `android/app/proguard-rules.pro`(if the file does not exist - create it):
-```properties
--keep class com.sun.jna.* { *; }
--keepclassmembers class * extends com.sun.jna.* { public *; }
-```
-
-If you want to use a microphone input, add the microphone permission to your `AndroidManifest.xml`:
-```xml
-<uses-permission android:name="android.permission.RECORD_AUDIO" />
-```
+Follow the instruction at the [Installing page](https://pub.dev/packages/vosk_flutter/install) to install the plugin.
 
 ### Load model
+From the assets:
 ```yaml
 flutter:
   assets:
     - assets/models/
 
 ```
+From the network:
 ```dart
 final vosk = VoskFlutterPlugin.instance();
 final enSmallModelPath = await ModelLoader()
@@ -57,6 +47,7 @@ final recognizerWithGrammar = await vosk.createRecognizer(
 ```
 
 ### Recognize audio data
+From the file:
 ```dart
 Uint8List audioBytes = ...; // audio data in PCM 16-bit mono format
 List<String> results = [];
@@ -78,14 +69,11 @@ await recognizer.acceptWaveformBytes(
   Uint8List.fromList(audioBytes.getRange(pos, audioBytes.length).toList()));
 print(await recognizer.getFinalResult());
 ```
-
-### Recognize microphone data
-#### Android
+From the microphone(you can use any suitable flutter plugin to get the micStream, for example [mic_stream](https://pub.dev/packages/mic_stream)):
 ```dart
+Uint8List micStream = ...;
 final speechService = await vosk.initSpeechService(recognizer);
 speechService.onPartial().forEach((partial) => print(partial));
 speechService.onResult().forEach((result) => print(result));
-await speechService.start();
+await speechService.start(micStream);
 ```
-#### Linux & Windows
-Use any suitable plugin to get the microphone input and [pass it to a recognizer](#recognize-audio-data)
