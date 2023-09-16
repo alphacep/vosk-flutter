@@ -15,7 +15,7 @@ dependencies:
   ffi: ^2.0.1
   flutter:
     sdk: flutter
-  http: ^0.13.5
+  http: ^1.1.0
   package_config: ^2.1.0
   path: ^1.8.2
   path_provider: ^2.0.8
