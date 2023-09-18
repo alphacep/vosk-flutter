@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:record/record.dart';
 import 'package:vosk_flutter/vosk_flutter.dart';
-import 'package:vosk_flutter_example/test_screen.dart';
 
 void main() {
   runApp(const MyApp());
