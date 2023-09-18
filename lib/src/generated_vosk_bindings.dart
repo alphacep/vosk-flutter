@@ -691,9 +691,9 @@ class VoskLibrary {
   }
 
   late final _vosk_batch_recognizer_freePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<VoskBatchRecognizer>)>>('vosk_batch_recognizer_free');
+          ffi
+          .NativeFunction<ffi.Void Function(ffi.Pointer<VoskBatchRecognizer>)>>(
+      'vosk_batch_recognizer_free');
   late final _vosk_batch_recognizer_free = _vosk_batch_recognizer_freePtr
       .asFunction<void Function(ffi.Pointer<VoskBatchRecognizer>)>();
 
@@ -751,8 +751,8 @@ class VoskLibrary {
   }
 
   late final _vosk_batch_recognizer_finish_streamPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<VoskBatchRecognizer>)>>(
+          ffi
+          .NativeFunction<ffi.Void Function(ffi.Pointer<VoskBatchRecognizer>)>>(
       'vosk_batch_recognizer_finish_stream');
   late final _vosk_batch_recognizer_finish_stream =
       _vosk_batch_recognizer_finish_streamPtr
@@ -786,9 +786,9 @@ class VoskLibrary {
   }
 
   late final _vosk_batch_recognizer_popPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<VoskBatchRecognizer>)>>('vosk_batch_recognizer_pop');
+          ffi
+          .NativeFunction<ffi.Void Function(ffi.Pointer<VoskBatchRecognizer>)>>(
+      'vosk_batch_recognizer_pop');
   late final _vosk_batch_recognizer_pop = _vosk_batch_recognizer_popPtr
       .asFunction<void Function(ffi.Pointer<VoskBatchRecognizer>)>();
 
@@ -802,8 +802,8 @@ class VoskLibrary {
   }
 
   late final _vosk_batch_recognizer_get_pending_chunksPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Int Function(ffi.Pointer<VoskBatchRecognizer>)>>(
+          ffi
+          .NativeFunction<ffi.Int Function(ffi.Pointer<VoskBatchRecognizer>)>>(
       'vosk_batch_recognizer_get_pending_chunks');
   late final _vosk_batch_recognizer_get_pending_chunks =
       _vosk_batch_recognizer_get_pending_chunksPtr
