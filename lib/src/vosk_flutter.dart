@@ -129,13 +129,11 @@ class VoskFlutterPlugin {
       case 'model.created':
         final modelPath = call.arguments as String;
         _pendingModels.remove(modelPath)?.complete(Model(modelPath, _channel));
-        break;
       case 'model.error':
         final args = call.arguments as Map;
         final modelPath = args['modelPath'] as String;
         final error = args['error'] as String;
         _pendingModels.remove(modelPath)?.completeError(error);
-        break;
       default:
         log('Unsupported method: ${call.method}', name: 'VOSK_PLUGIN');
     }

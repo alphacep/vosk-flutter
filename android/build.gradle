@@ -11,7 +11,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.3'
+        classpath 'com.android.tools.build:gradle:8.0.0'
     }
 }
 
@@ -30,6 +30,8 @@ apply plugin: 'com.android.library'
 android {
     compileSdk 33
 
+    namespace 'org.vosk.vosk_flutter'
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -45,8 +47,8 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'net.java.dev.jna:jna:5.13.0@aar'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'net.java.dev.jna:jna:5.15.0@aar'
     implementation 'com.alphacephei:vosk-android:0.3.46@aar'
 //    implementation project(':models')
 }

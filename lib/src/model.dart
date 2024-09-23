@@ -23,7 +23,7 @@ class Model {
   /// Free all model resources.
   void dispose() {
     if (_voskLibrary != null) {
-      _voskLibrary!.vosk_model_free(modelPointer!);
+      _voskLibrary.vosk_model_free(modelPointer!);
     }
   }
 

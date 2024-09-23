@@ -164,7 +164,7 @@ class _TestScreenState extends State<TestScreen> {
     return ElevatedButton(
         onPressed: onPressed,
         child: Text(text),
-        style: ButtonStyle(backgroundColor: MaterialStateProperty.all(color)));
+        style: ButtonStyle(backgroundColor: WidgetStateProperty.all(color)));
   }
 
   void _toastFutureError(Future<Object?> future) =>
