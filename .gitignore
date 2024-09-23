@@ -29,7 +29,6 @@
 build/
 
 # FVM
-.fvm/flutter_sdk
 
 # asdf
 .tool-versions
@@ -38,3 +37,6 @@ build/
 _flutter/
 
 */libs/
+
+# FVM Version Cache
+.fvm/

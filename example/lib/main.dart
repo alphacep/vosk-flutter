@@ -3,14 +3,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:record/record.dart';
 import 'package:vosk_flutter/vosk_flutter.dart';
-import 'package:vosk_flutter_example/test_screen.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +20,7 @@ class MyApp extends StatelessWidget {
 }
 
 class VoskFlutterDemo extends StatefulWidget {
-  const VoskFlutterDemo({Key? key}) : super(key: key);
+  const VoskFlutterDemo({super.key});
 
   @override
   State<VoskFlutterDemo> createState() => _VoskFlutterDemoState();
@@ -34,7 +33,7 @@ class _VoskFlutterDemoState extends State<VoskFlutterDemo> {
 
   final _vosk = VoskFlutterPlugin.instance();
   final _modelLoader = ModelLoader();
-  final _recorder = Record();
+  final _recorder = AudioRecorder();
 
   String? _fileRecognitionResult;
   String? _error;
@@ -154,12 +153,12 @@ class _VoskFlutterDemoState extends State<VoskFlutterDemo> {
 
   Future<void> _recordAudio() async {
     try {
-      await _recorder.start(
-          samplingRate: 16000, encoder: AudioEncoder.wav, numChannels: 1);
+      await _recorder.startStream(const RecordConfig(
+          sampleRate: 16000, encoder: AudioEncoder.wav, numChannels: 1
+      )
+          );
     } catch (e) {
-      _error = e.toString() +
-          '\n\n Make sure fmedia(https://stsaz.github.io/fmedia/)'
-              ' is installed on Linux';
+      _error = '$e\n\n Make sure fmedia(https://stsaz.github.io/fmedia/) is installed on Linux';
     }
   }
 
@@ -172,9 +171,7 @@ class _VoskFlutterDemoState extends State<VoskFlutterDemo> {
         _fileRecognitionResult = await _recognizer!.getFinalResult();
       }
     } catch (e) {
-      _error = e.toString() +
-          '\n\n Make sure fmedia(https://stsaz.github.io/fmedia/)'
-              ' is installed on Linux';
+      _error = '$e\n\n Make sure fmedia(https://stsaz.github.io/fmedia/) is installed on Linux';
     }
   }
 }
