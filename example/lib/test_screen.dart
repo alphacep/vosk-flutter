@@ -5,7 +5,7 @@ import 'package:vosk_flutter/vosk_flutter.dart';
 const modelAsset = 'assets/models/vosk-model-small-en-us-0.15.zip';
 
 class TestScreen extends StatefulWidget {
-  const TestScreen({Key? key}) : super(key: key);
+  const TestScreen({super.key});
 
   @override
   State<TestScreen> createState() => _TestScreenState();
@@ -143,12 +143,12 @@ class _TestScreenState extends State<TestScreen> {
                     StreamBuilder(
                         stream: _speechService?.onPartial(),
                         builder: (_, snapshot) =>
-                            Text('Partial: ' + snapshot.data.toString())),
+                            Text('Partial: ${snapshot.data}')),
                   if (_speechService != null)
                     StreamBuilder(
                         stream: _speechService?.onResult(),
                         builder: (_, snapshot) =>
-                            Text('Result: ' + snapshot.data.toString())),
+                            Text('Result: ${snapshot.data}')),
                   if (_speechService != null)
                     Text('Recognition error: $_recognitionError'),
                 ],
@@ -163,8 +163,8 @@ class _TestScreenState extends State<TestScreen> {
   Widget btn(String text, VoidCallback onPressed, {Color? color}) {
     return ElevatedButton(
         onPressed: onPressed,
-        child: Text(text),
-        style: ButtonStyle(backgroundColor: MaterialStateProperty.all(color)));
+        style: ButtonStyle(backgroundColor: WidgetStateProperty.all(color)),
+        child: Text(text));
   }
 
   void _toastFutureError(Future<Object?> future) =>
