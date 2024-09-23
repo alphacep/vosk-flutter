@@ -40,7 +40,7 @@ class Recognizer {
   /// Configures recognizer to output n-best results.
   Future<void> setMaxAlternatives(int maxAlternatives) {
     if (_voskLibrary != null) {
-      _voskLibrary!.vosk_recognizer_set_max_alternatives(
+      _voskLibrary.vosk_recognizer_set_max_alternatives(
         recognizerPointer!,
         maxAlternatives,
       );
@@ -56,7 +56,7 @@ class Recognizer {
   /// Enables/disables words with times in the output of the [getResult].
   Future<void> setWords({required bool words}) {
     if (_voskLibrary != null) {
-      _voskLibrary!.vosk_recognizer_set_words(
+      _voskLibrary.vosk_recognizer_set_words(
         recognizerPointer!,
         words ? 1 : 0,
       );
@@ -69,7 +69,7 @@ class Recognizer {
   /// Same as [setWords] but for [getPartialResult].
   Future<void> setPartialWords({required bool partialWords}) {
     if (_voskLibrary != null) {
-      _voskLibrary!.vosk_recognizer_set_partial_words(
+      _voskLibrary.vosk_recognizer_set_partial_words(
         recognizerPointer!,
         partialWords ? 1 : 0,
       );
@@ -88,7 +88,7 @@ class Recognizer {
     if (_voskLibrary != null) {
       final result = using((arena) {
         final data = bytes.toCharPtr(arena);
-        return _voskLibrary!.vosk_recognizer_accept_waveform(
+        return _voskLibrary.vosk_recognizer_accept_waveform(
           recognizerPointer!,
           data,
           bytes.length,
@@ -107,7 +107,7 @@ class Recognizer {
     if (_voskLibrary != null) {
       final result = using((arena) {
         final data = floats.toFloatPtr(arena);
-        return _voskLibrary!.vosk_recognizer_accept_waveform_f(
+        return _voskLibrary.vosk_recognizer_accept_waveform_f(
           recognizerPointer!,
           data,
           floats.length,
@@ -127,7 +127,7 @@ class Recognizer {
   /// If word times enabled returns word time, see also [setWords].
   Future<String> getResult() {
     if (_voskLibrary != null) {
-      final result = _voskLibrary!.vosk_recognizer_result(recognizerPointer!);
+      final result = _voskLibrary.vosk_recognizer_result(recognizerPointer!);
       return Future.value(result.toDartString());
     }
 
@@ -142,7 +142,7 @@ class Recognizer {
   Future<String> getPartialResult() {
     if (_voskLibrary != null) {
       final result =
-          _voskLibrary!.vosk_recognizer_partial_result(recognizerPointer!);
+          _voskLibrary.vosk_recognizer_partial_result(recognizerPointer!);
       return Future.value(result.toDartString());
     }
 
@@ -157,7 +157,7 @@ class Recognizer {
   Future<String> getFinalResult() {
     if (_voskLibrary != null) {
       final result =
-          _voskLibrary!.vosk_recognizer_final_result(recognizerPointer!);
+          _voskLibrary.vosk_recognizer_final_result(recognizerPointer!);
       return Future.value(result.toDartString());
     }
 
@@ -170,7 +170,7 @@ class Recognizer {
     if (_voskLibrary != null) {
       using((arena) {
         final grammarString = jsonEncode(grammar).toCharPtr(arena);
-        _voskLibrary!.vosk_recognizer_set_grm(
+        _voskLibrary.vosk_recognizer_set_grm(
           recognizerPointer!,
           grammarString,
         );
@@ -187,7 +187,7 @@ class Recognizer {
   /// Resets current results so the recognition can continue from scratch.
   Future<void> reset() {
     if (_voskLibrary != null) {
-      _voskLibrary!.vosk_recognizer_reset(recognizerPointer!);
+      _voskLibrary.vosk_recognizer_reset(recognizerPointer!);
       return Future.value();
     }
 
@@ -198,7 +198,7 @@ class Recognizer {
   /// Underlying model is also unreferenced and if needed, released.
   Future<void> dispose() {
     if (_voskLibrary != null) {
-      _voskLibrary!.vosk_recognizer_free(recognizerPointer!);
+      _voskLibrary.vosk_recognizer_free(recognizerPointer!);
       return Future.value();
     }
 
