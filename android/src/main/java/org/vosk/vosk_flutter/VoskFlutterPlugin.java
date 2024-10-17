@@ -17,6 +17,7 @@ import org.vosk.vosk_flutter.exceptions.MissingRequiredArgument;
 import org.vosk.vosk_flutter.exceptions.RecognizerNotFound;
 import org.vosk.vosk_flutter.exceptions.SpeechServiceNotFound;
 import org.vosk.vosk_flutter.exceptions.WrongArgumentTypeException;
+import org.vosk.SpeakerModel;
 
 /**
  * VoskFlutterPlugin
@@ -26,6 +27,7 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
   private static final Class<HashMap<String, Object>> argsMapClass = (Class<HashMap<String, Object>>) new HashMap<String, Object>().getClass();
 
   private final HashMap<String, Model> modelsMap = new HashMap<>();
+  private final HashMap<String, SpeakerModel> speakerModelsMap = new HashMap<>();
   private final TreeMap<Integer, Recognizer> recognizersMap = new TreeMap<>();
 
   private MethodChannel channel;
@@ -63,6 +65,26 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
         }
         break;
 
+        case "speakerModel.create": {
+          String modelPath = castMethodCallArgs(call, String.class);
+          if (modelPath == null) {
+            result.error("WRONG_ARGS", "Please, send 1 string argument, contains speaker model path", null);
+            break;
+          }
+
+          new TaskRunner().executeAsync(() -> new SpeakerModel(modelPath), (speakerModel) -> {
+            speakerModelsMap.put(modelPath, speakerModel);
+            channel.invokeMethod("speakerModel.created", modelPath);
+          }, (exception) -> channel.invokeMethod("speakerModel.error", new HashMap<String, Object>() {{
+            put("modelPath", modelPath);
+            put("error", exception.getMessage());
+          }}));
+
+          result.success(null);
+        }
+        break;
+
+
         case "recognizer.create": {
           Map<String, Object> argsMap = castMethodCallArgs(call, argsMapClass);
           Integer sampleRate = getRequiredArgumentFromMap(argsMap, "sampleRate", Integer.class);
@@ -91,6 +113,23 @@ public class VoskFlutterPlugin implements FlutterPlugin, MethodCallHandler {
           result.success(recognizerId);
         }
         break;
+
+        case "recognizer.setSpeakerModel": {
+          Map<String, Object> argsMap = castMethodCallArgs(call, argsMapClass);
+          Integer recognizerId = getRequiredArgumentFromMap(argsMap, "recognizerId", Integer.class);
+          String speakerModelPath = getRequiredArgumentFromMap(argsMap, "speakerModelPath", String.class);
+
+          SpeakerModel speakerModel = speakerModelsMap.get(speakerModelPath);
+          if (speakerModel == null) {
+            result.error("NO_SPEAKER_MODEL", "Couldn't find speaker model with this path. Pls, create speaker model or send correct path.", null);
+            break;
+          }
+
+          getRecognizerById(recognizerId).setSpeakerModel(speakerModel);
+          result.success(null);
+        }
+        break;
+
 
         case "recognizer.setMaxAlternatives": {
           Map<String, Object> argsMap = castMethodCallArgs(call, argsMapClass);
