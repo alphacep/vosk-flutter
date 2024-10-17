@@ -8,6 +8,7 @@ import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:vosk_flutter/src/SpeakerModel.dart';
 import 'package:vosk_flutter/src/generated_vosk_bindings.dart';
 import 'package:vosk_flutter/src/utils.dart';
 import 'package:vosk_flutter/vosk_flutter.dart';
@@ -37,6 +38,7 @@ class VoskFlutterPlugin {
   static VoskFlutterPlugin? _instance;
 
   late final Map<String, Completer<Model>> _pendingModels = {};
+  late final Map<String, Completer<SpeakerModel>> _pendingSpeakerModels = {};
 
   /// Create a model from model data located at the [modelPath].
   /// See [ModelLoader]
@@ -54,6 +56,14 @@ class VoskFlutterPlugin {
       _pendingModels[modelPath] = completer;
       _channel.invokeMethod('model.create', modelPath);
     }
+    return completer.future;
+  }
+
+  Future<SpeakerModel> createSpeakerModel(String modelPath) {
+    final completer = Completer<SpeakerModel>();
+
+    _pendingSpeakerModels[modelPath] = completer;
+    _channel.invokeMethod('speakerModel.create', modelPath);
     return completer.future;
   }
 
@@ -107,6 +117,15 @@ class VoskFlutterPlugin {
     );
   }
 
+  /// Set speaker model for the recognizer
+  Future<void> setSpeakerModel(
+      int recognizerId, SpeakerModel speakerModel) async {
+    await _channel.invokeMethod('recognizer.setSpeakerModel', {
+      'recognizerId': recognizerId,
+      'speakerModelPath': speakerModel.path,
+    });
+  }
+
   /// Init a speech service that will use the provided [recognizer] to process
   /// audio input from the device microphone.
   ///
@@ -135,6 +154,18 @@ class VoskFlutterPlugin {
         final modelPath = args['modelPath'] as String;
         final error = args['error'] as String;
         _pendingModels.remove(modelPath)?.completeError(error);
+        break;
+      case 'speakerModel.created':
+        final speakerModelPath = call.arguments as String;
+        _pendingSpeakerModels
+            .remove(speakerModelPath)
+            ?.complete(SpeakerModel(speakerModelPath, _channel));
+        break;
+      case 'speakerModel.error':
+        final args = call.arguments as Map;
+        final speakerModelPath = args['speakerModelPath'] as String;
+        final error = args['error'] as String;
+        _pendingSpeakerModels.remove(speakerModelPath)?.completeError(error);
         break;
       default:
         log('Unsupported method: ${call.method}', name: 'VOSK_PLUGIN');
