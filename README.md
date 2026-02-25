@@ -1,3 +1,7 @@
+> ⚠️ **Non‑canonical document**
+> This file documents a legacy subsystem and is **not** the primary Helm Voice app reference.
+> Start with **`START_HERE.md`**, then **`APP_SUMMARY.md`**.
+
 # Vosk Flutter Plugin
 
 [![pub package](https://img.shields.io/pub/v/vosk_flutter.svg)](https://pub.dev/packages/vosk_flutter)
