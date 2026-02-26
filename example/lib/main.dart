@@ -94,6 +94,9 @@ class _VoskFlutterDemoState extends State<VoskFlutterDemo> {
 
   Widget _androidExample() {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Vosk Demo'),
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -128,6 +131,9 @@ class _VoskFlutterDemoState extends State<VoskFlutterDemo> {
 
   Widget _commonExample() {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Vosk Demo'),
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
