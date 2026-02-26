@@ -141,10 +141,31 @@ class _InstallCommand extends Command<void> {
           'Error code: ${response.statusCode}',
         );
       }
-      await response.pipe(destinationFile.openWrite());
-    }
-    // TODO(sergsavchuk): Handle download errors in Install command catch
-    finally {
+
+      // Stream response to file with cleanup on error
+      final sink = destinationFile.openWrite();
+      try {
+        await response.pipe(sink);
+      } catch (e) {
+        await sink.close();
+        if (await destinationFile.exists()) {
+          try {
+            await destinationFile.delete();
+          } catch (_) {}
+        }
+        rethrow;
+      } finally {
+        await sink.close();
+      }
+    } catch (_) {
+      // Ensure partial download is cleaned up on error
+      if (await destinationFile.exists()) {
+        try {
+          await destinationFile.delete();
+        } catch (_) {}
+      }
+      rethrow;
+    } finally {
       client.close(force: true);
     }
 

@@ -194,10 +194,9 @@ class VoskFlutterPlugin {
         using((arena) => voskLib.vosk_model_new(modelPath.toCharPtr(arena)));
 
     if (modelPointer == nullptr) {
-      // TODO(sergsavchuk): throw a custom error after deletion of the
-      // MethodChannel
-      // ignore: only_throw_errors
-      throw 'Failed to load model';
+      // Throw a typed exception instead of a raw string so callers
+      // can handle it programmatically.
+      throw ModelLoadException('Failed to load Vosk model');
     }
     return modelPointer.address;
   }
@@ -205,3 +204,17 @@ class VoskFlutterPlugin {
 
 /// An exception thrown when the user denies access to the microphone.
 class MicrophoneAccessDeniedException implements Exception {}
+
+/// Thrown when a Vosk native model fails to load.
+///
+/// The message contains a concise description suitable for logging.
+class ModelLoadException implements Exception {
+  /// Create a new [ModelLoadException] with the given [message].
+  ModelLoadException(this.message);
+
+  /// Human-readable message describing the failure.
+  final String message;
+
+  @override
+  String toString() => 'ModelLoadException: $message';
+}

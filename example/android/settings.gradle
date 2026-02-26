@@ -8,4 +8,11 @@ localPropertiesFile.withReader("UTF-8") { reader -> properties.load(reader) }
 
 def flutterSdkPath = properties.getProperty("flutter.sdk")
 assert flutterSdkPath != null, "flutter.sdk not set in local.properties"
-apply from: "$flutterSdkPath/packages/flutter_tools/gradle/app_plugin_loader.gradle"
+// The legacy `app_plugin_loader.gradle` script was applied here previously.
+// Recent Gradle/Flutter versions require plugins to be applied declaratively
+// via the plugins block. For an example project this loader is not required
+// in IDE import scenarios and can cause phased-action errors in some setups.
+// If you are building via `flutter build` the Flutter tooling will ensure
+// plugins are configured correctly. Uncomment the following line only when
+// running legacy non-Flutter Gradle tasks that need the app_plugin_loader.
+// apply from: "$flutterSdkPath/packages/flutter_tools/gradle/app_plugin_loader.gradle"
